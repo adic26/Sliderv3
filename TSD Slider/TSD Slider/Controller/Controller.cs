@@ -1,4 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Windows.Forms;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TSD_Slider.Configuration;
 using TSD_Slider.UI.Forms;
 using TsdLib.Configuration;
@@ -6,16 +11,284 @@ using TsdLib.Configuration.Connections;
 using TsdLib.Measurements;
 using TsdLib.TestSystem.Controller;
 using TsdLib.TestSystem.TestSequence;
+using TSD_Slider.Instruments;
+using TSD_Slider.UI.Components;
+using TSD_Slider.Communication;
+using RDotNet;
+
 
 
 namespace TSD_Slider
 {
     public class Controller : ControllerBase<TSD_SliderView, StationConfig, ProductConfig, TestConfig>
     {
+
+        public static tsdFanuc ROBOT;
+        public TSD_SliderView myView;
+        public FTP myFTP;
+        public CharData charDataView;
+        public DataBuilder dataCollection;
+        private IProgress<int> progressBar;
+        private IProgress<DataFrame> progressData;
+        private StationConfig stationconfig;
+        private ProductConfig productconfig;
+
         public Controller(ITestDetails testDetails, IConfigConnection databaseConnection, bool localDomain)
             : base(testDetails,databaseConnection,localDomain)
         {
+            //View Events
+            
+            myView.startButton += new System.EventHandler(myView_startButton);
+            myView.stopButton += new System.EventHandler(myView_stopButton);
+            myView.connectButton += new EventHandler(myView_connectButton);
+            myView.dataTestButton += getCalibrationRawData;
+            myView.TESTLift += ROBOT_getLiftOffValue;
 
+
+
+            //Robot Events
+            ROBOT = new tsdFanuc();
+            ROBOT.updateCyclesInView += ROBOT_updateCyclesInView;
+            ROBOT.robotConnectionStatus += myView_robotConnectStatus;
+            ROBOT.ftpDownloadDataFile += myView_ftpTestButton;
+            ROBOT.getCalibrationData += getCalibrationRawData;
+            ROBOT.getLiftOffValue += ROBOT_getLiftOffValue;
+        }
+
+        void myView_connectButton(object sender, System.EventArgs e)
+        {
+            try
+            {
+                if (!ROBOT.IsConnected)
+                {
+                    if (stationconfig == null)
+                    {
+                        //Local configurations
+                        stationconfig = myView.stationConfig;
+                        productconfig = myView.productConfig;
+                        instantiations();
+                    }
+
+                    //FTP connection
+                    myFTP = new FTP(stationconfig.Fanuc_Ipaddress, stationconfig.fanucUsername, stationconfig.fanucPassword);
+
+                    //Robot Connection
+                    ROBOT.connect(stationconfig.Fanuc_Ipaddress);
+                    ROBOT.pcCyclesToDo = productconfig.NumOfCycles;
+                    ROBOT.pcCalibrate = productconfig.CalibrateEvery;
+                    ROBOT.PcCompletedCycles = productconfig.CompletedCycles;
+                    ROBOT.robot_SLIDER_CYCLES_registerName = stationconfig.RegCyclesName;
+                    ROBOT.robot_SLIDER_COMPLETED_registerName = stationconfig.RegCyclesCompletedName;
+                    ROBOT.robot_LIFT_registerName = stationconfig.RegLiftOffName;
+                    ROBOT.pcLiftOffPoint = productconfig.liftOffPoint;
+                    ROBOT.tpChar = stationconfig.TPCharacterizationName;
+                    ROBOT.tpSlider = stationconfig.TPSliderCycleName;
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+        }
+
+        private void instantiations()
+        {
+            //Lift Off Instantiation and events
+            dataCollection = new DataBuilder(stationconfig.i386Path, stationconfig.RInstallerPath);
+
+            //Dataview connection
+            charDataView = myView.DataGridLiftOffData; //connecting datagridview with controllers instance
+
+            if (progressData == null)
+            {
+                progressData = new Progress<DataFrame>(progMatrix =>
+                {
+                    charDataView.updateData(progMatrix);
+                    myView.graphCharacterization(charDataView.GetValues(stationconfig.scriptDisplacementName), charDataView.GetValues(stationconfig.scriptForceName));
+                });
+                //connecting progress reporting with Lift Off Object
+                dataCollection.setupProgress(progressData);
+
+            }
+        }
+
+        void myView_stopButton(object sender, System.EventArgs e)
+        {
+            try
+            {
+                this.emergencyStop();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+        }
+
+        private void getCalibrationRawData(object sender, bool e)
+        {
+            try
+            {
+                if (e)
+                {
+                    //collection of matrix
+                    if (stationconfig == null)
+                    {
+                        //Local configurations
+                        stationconfig = myView.stationConfig;
+                        productconfig = myView.productConfig;
+                        //instantiations();
+                    }
+
+                    var parameters = new Dictionary<string, SymbolicExpression>();
+                    parameters.Add(stationconfig.scriptParameterName, dataCollection.directory(stationconfig.PCDataFolderPath));
+                    DataFrame charDataMatrix = dataCollection.GetLiftOffRawData(stationconfig.scriptLocation, stationconfig.scriptFunctionName, parameters);
+                }
+                else
+                    Trace.WriteLine("Unable to evaluate Lift off");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+        }
+
+        void myView_startButton(object sender, System.EventArgs e)
+        {
+            try
+            {
+                this.executeSliderTest();
+                myView.toggleTextBoxes();
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+        }
+
+        void ROBOT_getLiftOffValue(object sender, bool e)
+        {
+            try
+            {
+                ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(charDataView.GetValues(stationconfig.scriptDisplacementName), charDataView.GetValues(stationconfig.scriptForceName));
+                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint);
+
+                //Archive the data file
+                myView.archiveDTFiles();
+
+
+                //update the measurement
+                myView.LogMeasurement(ROBOT.pcLiftOffPoint);
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+
+        }
+
+        private void myView_updateProgress(object sender, int e)
+        {
+            this.progressBar.Report(e);
+        }
+
+        private void myView_ftpTestButton(object sender, bool e)
+        {
+            tsdFanuc fanuc = sender as tsdFanuc;
+            if (myFTP != null)
+            {
+                //produces Robot listed directory
+                Trace.WriteLine("Getting my list under : " + stationconfig.ForceFilePath);
+                List<string> temp = myFTP.GetFileList(stationconfig.ForceFilePath);
+
+                if (temp == null)
+                {
+                    Trace.WriteLine(
+                        "Could Not Connect to Host Using " +
+                        stationconfig.fanucUsername +
+                        " Username" + stationconfig.fanucUsername +
+                        " And " + stationconfig.fanucPassword +
+                        " :" + stationconfig.ForceFilePath);
+
+                    Trace.WriteLine(
+                        "IF its NULL, it means: It couldn't connect anonymously " +
+                        "Or Could not connect using Force File Path Setting : " +
+                        stationconfig.ForceFilePath);
+
+                    if (fanuc != null)
+                        fanuc.OkToEvaluateLiftOff = false;
+                }
+                else
+                {
+                    //finding out the maximum file by sorting and downloading this specific file
+                    //var sortedOrder = temp.OrderByDescending<string, int>(s => int.Parse(s.Replace("fsdt", "")));
+                    //string fileName = sortedOrder.ElementAt(1);
+                    int MaxIndex = temp.IndexOf(temp.Max<string>());
+                    string fileName = temp.ElementAt(MaxIndex - 1);
+                    Trace.WriteLine("Most Updated DT File is : " + fileName);
+                    if (fileName.Contains("9999"))
+                        Trace.WriteLine("Reached MAXIMUM FILE. " +
+                            "Please not the lift off values will not be determined anymore" +
+                            ".  Please delete from the folder " + stationconfig.ForceFilePath);
+
+                    //Download this file
+                    myFTP.Download(stationconfig.ForceFilePath, fileName, stationconfig.PCDataFolderPath);
+                    Trace.WriteLine(fileName + " downloaded in local drive : " + stationconfig.PCDataFolderPath);
+                    if (fanuc != null)
+                        fanuc.OkToEvaluateLiftOff = true;
+                }
+            }
+        }
+
+        void myView_robotConnectStatus(object sender, bool e)
+        {
+            myView.toggleConnStatus(e);
+            myView.startButtonEnDis(e);
+            myView.toggleStopButton();
+
+            //setting up progress bar
+            if (progressBar == null)
+            {
+                Trace.WriteLine("Initializing Progress Bar...");
+                progressBar = new Progress<int>(progValue => { myView.updateProgressbar(progValue); });
+                ROBOT.setupProgress(progressBar);
+            }
+        }
+
+        void ROBOT_updateCyclesInView(object sender, int e)
+        {
+            myView.updateTextBox(e);
+        }
+        //
+        //: //base(devMode, "sliderv2", Application.ProductVersion, new DatabaseFolderConnection(@"C:\temp\RemiSettingsTest")) { }
+
+        async private void executeSliderTest()
+        {
+            if (ROBOT.IsConnected)
+            {
+                myView.toggleStartButton();
+                myView.toggleStopButton();
+                await Task.Run(() => ROBOT.startSliderTest());
+
+            }
+            else
+                Trace.WriteLine("Robot is not connected");
+        }
+
+        private void emergencyStop()
+        {
+            if (ROBOT.IsConnected)
+            {
+                ROBOT.AbortMotion();
+                ROBOT.disconnect();
+            }
         }
 
 
