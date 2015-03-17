@@ -1,0 +1,744 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TsdLib.Configuration</name>
+    </assembly>
+    <members>
+        <member name="T:TsdLib.Configuration.Common.ProductConfigCommon">
+            <summary>
+            Contains base station config properties common to every type of product. Product config properties include those related to a specific DUT model, eg. radio bands, CPU chipset, etc.
+            Product config is used to parameterize the test sequence, customizing the sequence to operate on different DUT models.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.ConfigItem">
+            <summary>
+            Base class for a specific instance of a configuration.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.InitializeDefaultValues">
+            <summary>
+            Initialize the configuration properties to default values.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.Clone">
+            <summary>
+            Performs a deep clone of the IConfigItem object.
+            </summary>
+            <returns>A new IConfigItem object.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.ToString">
+            <summary>
+            Gets the name of the <see cref="T:TsdLib.Configuration.ConfigItem"/>
+            </summary>
+            <returns>Name of the <see cref="T:TsdLib.Configuration.ConfigItem"/>.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.Dispose">
+            <summary>
+            Dispose the <see cref="T:TsdLib.Configuration.ConfigItem"/>.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.Dispose(System.Boolean)">
+            <summary>
+            Dispose of any resources being used by the test sequence.
+            </summary>
+            <param name="disposing">True to dispose of unmanaged resources.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.ConfigItem.InitializeLifetimeService">
+            <summary>
+            Obtains a lifetime service object to control the lifetime policy for this instance.
+            </summary>
+            <returns>null</returns>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.Name">
+            <summary>
+            Gets or sets the name of the configuration item.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.StoreInDatabase">
+            <summary>
+            True to store configuration locally and on a database. False to store locally only.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.IsDefault">
+            <summary>
+            Returns true if the config item is an auto-generated default item.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.IsValid">
+            <summary>
+            Returns true by default, indicating that the config item is valid in the current context. Override to add conditions to return false.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.CommonBaseTypeName">
+            <summary>
+            Gets the name of the common base type.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.ConfigItem.Site">
+            <summary>
+            Gets the <see cref="T:System.ComponentModel.ISite"/> of the <see cref="T:System.ComponentModel.IComponent"/>
+            </summary>
+        </member>
+        <member name="E:TsdLib.Configuration.ConfigItem.Disposed">
+            <summary>
+            Event that is fired when the <see cref="T:System.ComponentModel.IComponent"/> is disposed.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Common.SequenceConfigCommon">
+            <summary>
+            Conatains functionality to serialize test sequences as configuration items.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Common.SequenceConfigCommon.InitializeDefaultValues">
+            <summary>
+            Initialize the sequence configuration with an empty ExecuteTest method and basic assembly references.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Common.SequenceConfigCommon.#ctor">
+            <summary>
+            Initialize a new Sequence configuration instance.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Common.SequenceConfigCommon.#ctor(System.String,System.Boolean,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Initialize a new Sequence configuration instance from a source code file.
+            </summary>
+            <param name="csFile">C# code file containing the complete test sequence class.</param>
+            <param name="storeInDatabase">True to store configuration locally and on the database. False to store locally only.</param>
+            <param name="assemblyReferences">Zero or more assemblies that are referenced by the test sequence class.</param>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.SequenceConfigCommon.AssemblyReferences">
+            <summary>
+            Gets or sets a list of assemblies needed to be referenced declared in the test sequence.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.SequenceConfigCommon.SourceCode">
+            <summary>
+            Gets or sets the source code for the step-by-step execution of the test sequence.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.SequenceConfigCommon.Namespace">
+            <summary>
+            Gets the namespace that the sequence class is defined in.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.SequenceConfigCommon.ClassName">
+            <summary>
+            Gets the short name of the sequence class.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.SequenceConfigCommon.FullTypeName">
+            <summary>
+            Gets the fully qualified name of the sequence class.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Common.StationConfigCommon">
+            <summary>
+            Contains base station config properties common to every system. Station config properties include those related to a specific system (based on host PC), eg. port/instrument addresses, physical location, etc.
+            Station config is used to parameterize the test sequence, customizing the sequence to operate on different stations (ie. instruments with different addresses).
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Common.StationConfigCommon.MachineNames">
+            <summary>
+            Gets or sets a list of machine names that can use this station config item.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Common.TestConfigCommon">
+            <summary>
+            Contains base test config properties common to every type of test. Test config properties include those related to a test system, eg. temperature profile, loop iterations, etc.
+            Test config is used to parameterize the test sequence, allowing the same sequence to perform different test cases (ie. strict vs. relaxed or functional vs. parametric)
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Exceptions.InvalidConfigTypeException">
+            <summary>
+            Exception due to an invalid configuration type.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.InvalidConfigTypeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialization constructor used by the .NET Framework to initialize an instance of the <see cref="T:TsdLib.Configuration.Exceptions.InvalidConfigTypeException"/> class from serialized data.
+            </summary>
+            <param name="info">The SerialzationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains the contextual information about the source or destination.</param>
+        </member>
+        <member name="T:TsdLib.Configuration.Exceptions.InvalidDirectoryException">
+            <summary>
+            Exception due to an invalid or missing directory.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.InvalidDirectoryException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialization constructor used by the .NET Framework to initialize an instance of the InvalidFilePathException class from serialized data.
+            </summary>
+            <param name="info">The SerialzationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains the contextual information about the source or destination.</param>
+        </member>
+        <member name="T:TsdLib.Configuration.Exceptions.FileUploadException">
+            <summary>
+            Exception due to an invalid file name.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.FileUploadException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initialize a new <see cref="T:TsdLib.Configuration.Exceptions.FileUploadException"/> with the specified file name.
+            </summary>
+            <param name="fileName">Name of the file causing the exception</param>
+            <param name="inner">OPTIONAL: The Exception that caused the ConfigDoesNotExistException.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.FileUploadException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialization constructor used by the .NET Framework to initialize an instance of the <see cref="T:TsdLib.Configuration.Exceptions.FileUploadException"/> class from serialized data.
+            </summary>
+            <param name="info">The SerialzationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains the contextual information about the source or destination.</param>
+        </member>
+        <member name="T:TsdLib.Configuration.Exceptions.InvalidConfigFileException">
+            <summary>
+            Exception due to an error saving or loading configuration data.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.InvalidConfigFileException.#ctor(System.Exception,System.Xml.Linq.XElement[])">
+            <summary>
+            Initialize a new InvalidConfigFileException when no configuration data exists for the specified test system. 
+            </summary>
+            <param name="configElements">Zero or more <see cref="T:System.Xml.Linq.XElement"/> that caused the exception.</param>
+            <param name="inner">OPTIONAL: The Exception that caused the ConfigDoesNotExistException.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.InvalidConfigFileException.#ctor(System.Xml.Linq.XDocument,System.Exception)">
+            <summary>
+            Initialize a new InvalidConfigFileException when no configuration data exists for the specified test system. 
+            </summary>
+            <param name="document">The <see cref="T:System.Xml.Linq.XDocument"/> that caused the exception.</param>
+            <param name="inner">OPTIONAL: The Exception that caused the ConfigDoesNotExistException.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Exceptions.InvalidConfigFileException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialization constructor used by the .NET Framework to initialize an instance of the InvalidConfigFileException class from serialized data.
+            </summary>
+            <param name="info">The SerialzationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains the contextual information about the source or destination.</param>
+        </member>
+        <member name="T:TsdLib.Configuration.Managers.ConfigManager`1">
+            <summary>
+            Encapsulates configuration data of a specified type and provides methods to save and retieve.
+            </summary>
+            <typeparam name="T">Type of configuration derived from <see cref="T:TsdLib.Configuration.ConfigItem"/></typeparam>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.#ctor(TsdLib.Configuration.ITestDetails,TsdLib.Configuration.Connections.IConfigConnection)">
+            <summary>
+            Initialize a new configuration manager instance.
+            </summary>
+            <param name="testDetails">The <see cref="T:TsdLib.Configuration.ITestDetails"/> used for retriving the relevant configuration data.</param>
+            <param name="sharedConfigConnection">An <see cref="T:TsdLib.Configuration.Connections.IConfigConnection"/> object used to persist configuration to a shared location (ie. database, network share, local shared directory, etc.)</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.Add(`0)">
+            <summary>
+            Add a new <see cref="T:TsdLib.Configuration.ConfigItem"/> to the collection.
+            </summary>
+            <param name="configItem">Config instance to add.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.GetConfigGroup">
+            <summary>
+            Retrive the set of configuration instances.
+            </summary>
+            <returns>A collection of configuration instances.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.GetConfig(System.String)">
+            <summary>
+            Retrieves a configuration instance.
+            </summary>
+            <param name="name">Name of the configuration instance.</param>
+            <returns>A <see cref="T:TsdLib.Configuration.ConfigItem"/> matching the name specified. Returns null if there is no matching ConfigItem.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.Save">
+            <summary>
+            Saves the configuration data to persisted storage.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManager`1.Reload">
+            <summary>
+            Reload the configuration data from persisted storage.
+            </summary>
+            <returns>A new <see cref="T:TsdLib.Configuration.IConfigManager`1"/> to manage the retrieved configuration data.</returns>
+        </member>
+        <member name="P:TsdLib.Configuration.Managers.ConfigManager`1.ConfigTypeName">
+            <summary>
+            Gets the type of configuration for this <see cref="T:TsdLib.Configuration.Managers.ConfigManager`1"/>. Do not remove, it is used for binding to UI controls.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Managers.ConfigManagerForm">
+            <summary>
+            User interface for viewing or editing configuration.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm.#ctor(System.String,System.Boolean)">
+            <summary>
+            Initialize a new <see cref="T:TsdLib.Configuration.Managers.ConfigManagerForm"/> to view or edit the configuration at a specified location.
+            </summary>
+            <param name="settingsLocation">Path to the folder or network share containing the configuration to view or edit.</param>
+            <param name="editable">True to allow editing. False to make the configuration read-only.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm.#ctor(System.String,System.Version,System.Boolean,System.Collections.Generic.IEnumerable{TsdLib.Configuration.IConfigManager})">
+            <summary>
+            Initialize a new config manager form to view or edit the specified configurations.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="editable">True to allow editing. False to make the configuration read-only.</param>
+            <param name="configManagers">A sequence of <see cref="T:TsdLib.Configuration.IConfigManager"/> objects that encapsulate the configuration data.</param>
+        </member>
+        <member name="F:TsdLib.Configuration.Managers.ConfigManagerForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Managers.ConfigManagerForm.ModifiedConfigs">
+            <summary>
+            Gets a collection of IConfigGroup objects that have been modified.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.Managers.ConfigManagerForm2.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm2.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerForm2.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.Managers.ConfigManagerForm2.ModifiedConfigs">
+            <summary>
+            Gets a collection of IConfigGroup objects that have been modified.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerProvider.#ctor(TsdLib.Configuration.ITestDetails,TsdLib.Configuration.Connections.IConfigConnection)">
+            <summary>
+            Initialize the ConfigurationManagerProvider by providing the test details and connection information required to save and recal configuration data.
+            </summary>
+            <param name="testdetails"></param>
+            <param name="sharedConfigConnection"></param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerProvider.GetConfigManager``1">
+            <summary>
+            Gets an instance of a configuration manager used to save and recall configuration data. Initializes the manager if one is not yet present.
+            </summary>
+            <typeparam name="T">Type of ConfigItem (eg. StationConfig, ProductConfig, etc)</typeparam>
+            <returns>A configuration manager to </returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerProvider.GetConfigManager(System.Type)">
+            <summary>
+            Gets an instance of a configuration manager used to save and recall configuration data. Returns null if one is not yet present.
+            </summary>
+            <param name="configItemType">The type of config items to manage.</param>
+            <returns>An <see cref="T:TsdLib.Configuration.IConfigManager"/>; Or null if the manager hasn't been initialized.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.ConfigManagerProvider.InitializeLifetimeService">
+            <summary>
+            Allows the remote proxy to stay alive in a remote Application Domain.
+            </summary>
+            <returns>null</returns>
+        </member>
+        <member name="T:TsdLib.Configuration.DesignerVerbSite">
+            <summary>
+            Contains functionality to expose public methods of any object as <see cref="T:System.Windows.Forms.PropertyGrid"/> commands.
+            Methods to expose must be decorated with the <see cref="T:System.ComponentModel.BrowsableAttribute"/>.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.#ctor(System.Object)">
+            <summary>
+            Initialize a DesignerVerbSite to expose the public methods of the specified object.
+            </summary>
+            <param name="component">Object to wrap in the DesignerVerbSite</param>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.GetService(System.Type)">
+            <summary>
+            Gets the service object of the <see cref="T:System.ComponentModel.Design.IMenuCommandService"/> type.
+            </summary>
+            <param name="serviceType">An <see cref="T:System.ComponentModel.Design.IMenuCommandService"/> object that specifies the type of service object to get.</param>
+            <returns> A service object of type <see cref="T:System.ComponentModel.Design.IMenuCommandService"/>.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.AddCommand(System.ComponentModel.Design.MenuCommand)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="command">Not implemented.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.AddVerb(System.ComponentModel.Design.DesignerVerb)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="verb">Not implemented.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.FindCommand(System.ComponentModel.Design.CommandID)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="commandId">Not implemented.</param>
+            <returns>Not implemented.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.GlobalInvoke(System.ComponentModel.Design.CommandID)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="commandId">Not implemented.</param>
+            <returns>Not implemented.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.RemoveCommand(System.ComponentModel.Design.MenuCommand)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="command">Not implemented.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.RemoveVerb(System.ComponentModel.Design.DesignerVerb)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="verb">Not implemented.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.DesignerVerbSite.ShowContextMenu(System.ComponentModel.Design.CommandID,System.Int32,System.Int32)">
+            <summary>
+            Not implemented.
+            </summary>
+            <param name="menuId">Not implemented.</param>
+            <param name="x">Not implemented.</param>
+            <param name="y">Not implemented.</param>
+        </member>
+        <member name="P:TsdLib.Configuration.DesignerVerbSite.Verbs">
+            <summary>
+            Gets the collection of verbs that represent the methods on the component.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.DesignerVerbSite.Component">
+            <summary>
+            Not implemented.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.DesignerVerbSite.Container">
+            <summary>
+            Not implemented.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.DesignerVerbSite.DesignMode">
+            <summary>
+            Not implemented.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.DesignerVerbSite.Name">
+            <summary>
+            Not implemented.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Connections.FileSystemConnection">
+            <summary>
+            A database implementation that persists data settings to the local file system.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Connections.IFileConnection">
+            <summary>
+            Extends <see cref="T:TsdLib.Configuration.Connections.IConfigConnection"/> by adding file upload and download method definitions.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Connections.IConfigConnection">
+            <summary>
+            Defines methods to allow reading and writing string data to and from a storage location.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.IConfigConnection.WriteString(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.Type,System.String)">
+            <summary>
+            Read a string from the storage location using the name/version/mode of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="testSystemMode">An <see cref="T:TsdLib.Configuration.OperatingMode"/> describing the use-case of the test system.</param>
+            <param name="configType">The type used to encapsulate the configuration data.</param>
+            <param name="data">Data to write to the storage location.</param>
+            <returns>True on success; False otherwise.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.IConfigConnection.TryReadString(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.Type,System.String@)">
+            <summary>
+            Read a string from the storage location using the name/version/mode of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="testSystemMode">An <see cref="T:TsdLib.Configuration.OperatingMode"/> describing the use-case of the test system.</param>
+            <param name="configType">The type used to encapsulate the configuration data.</param>
+            <param name="data">Data read from the storage location.</param>
+            <returns>True if read was successful; false otherwise.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.IFileConnection.UploadFile(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.String,System.Boolean)">
+            <summary>
+            Uploads a file using the name/version of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="testSystemMode">An <see cref="T:TsdLib.Configuration.OperatingMode"/> describing the use-case of the test system.</param>
+            <param name="sourceFilePath">Absolute path to the file to upload.</param>
+            <param name="overWrite">True to overwrite existing file.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.FileSystemConnection.#ctor(System.IO.DirectoryInfo,System.String)">
+            <summary>
+            Initialize a new FileSystemConnection instance specifying a location on the local or network file system to persist settings.
+            </summary>
+            <param name="settingsBasePath">DirectoryInfo containing the local or network file system to use for persisting settings.</param>
+            <param name="appVersionFilter">OPTIONAL: A RegEx used to mask the application version. Default is to maintain Major.Minor and mask off Build.Revision.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.FileSystemConnection.WriteString(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.Type,System.String)">
+            <summary>
+            Read a string from the file system using the name/version/mode of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion"><see cref="T:System.Version"/> of the test system.</param>
+            <param name="testSystemMode">An <see cref="T:TsdLib.Configuration.OperatingMode"/> describing the use-case of the test system.</param>
+            <param name="configType">The type used to encapsulate the configuration data.</param>
+            <param name="data">Data to write to the file system.</param>
+            <returns>True on success; False otherwise.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.FileSystemConnection.TryReadString(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.Type,System.String@)">
+            <summary>
+            Read a string from the file system using the name/version/mode of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion"><see cref="T:System.Version"/> of the test system.</param>
+            <param name="testSystemMode">An <see cref="T:TsdLib.Configuration.OperatingMode"/> describing the use-case of the test system.</param>
+            <param name="configType">The type used to encapsulate the configuration data.</param>
+            <param name="data">Data read from the file system.</param>
+            <returns>True if read was successful; false otherwise.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Connections.FileSystemConnection.UploadFile(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.String,System.Boolean)">
+            <summary>
+            Uploads a file to the database using the name/version of the test system and dataDescription as indexes.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion"><see cref="T:System.Version"/> of the test system.</param>
+            <param name="testSystemMode">Operating mode of the test system (ie. Debug, Release, Development, Engineering, Production.</param>
+            <param name="sourceFilePath">Absolute path to the file to upload.</param>
+            <param name="overWrite">True to overwrite existing file.</param>
+        </member>
+        <member name="F:TsdLib.Configuration.Managers.PromoteModeForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.PromoteModeForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.PromoteModeForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.Managers.PromoteVersionForm.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.PromoteVersionForm.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.Managers.PromoteVersionForm.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.TestCases.TestCase">
+            <summary>
+            Represents a grouping of one or more test configs combined with one or more test sequences.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.TestDetails">
+            <summary>
+            Contains metadata describing the test request.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.OnTestSystemIdentityChanged(System.String)">
+            <summary>
+            Fires the <see cref="E:TsdLib.Configuration.TestDetails.TestSystemIdentityChanged"/> event.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.#ctor">
+            <summary>
+            Default constructor required for serialization.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.#ctor(System.String,System.Version,TsdLib.Configuration.OperatingMode)">
+            <summary>
+            Initialize a new TestDetails object filled with empty strings.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="testSystemMode">The operating mode of the test system (ie. Development, Engineering or Production).</param>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.#ctor(System.String,System.Version,TsdLib.Configuration.OperatingMode,System.String,System.UInt32,System.String,System.String,TsdLib.Configuration.FunctionalType)">
+            <summary>
+            Initialize a new TestDetails object.
+            </summary>
+            <param name="testSystemName">Name of the test system.</param>
+            <param name="testSystemVersion">Version of the test system.</param>
+            <param name="testSystemMode">The operating mode of the test system (ie. Development, Engineering or Production).</param>
+            <param name="jobNumber">Request or job number used to track the testing.</param>
+            <param name="unitNumber">Identifier for the DUT.</param>
+            <param name="testType">Type of test being performed, eg. Hardware Test Case Manager test number.</param>
+            <param name="testStage">Current stage of testing. Could be trial number, modifications performed or some other descriptor to identify what has been performed on the DUT.</param>
+            <param name="functionalType">OPTIONAL: Type of OS image loaded on the DUT, eg. MFI or SFI.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.ToString">
+            <summary>
+            Returns a CSV-friendly representation of the test details.
+            </summary>
+            <returns>A string containing all test details properties, delimited with Environment.NewLine and commas.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.ToString(System.String,System.String)">
+            <summary>
+            Returns the test details, separated by the specified row and column delimiters.
+            </summary>
+            <param name="rowSeparator">Delimiter string to insert between the name and value of each test detail.</param>
+            <param name="columnSeparator">Delimiter string to insert between each test detail.</param>
+            <returns>A string representation of the test details formatted with row and column delimiters.</returns>
+        </member>
+        <member name="F:TsdLib.Configuration.TestDetails._supressChangedEvent">
+            <summary>
+            Flag to temporarily suppress the <see cref="E:TsdLib.Configuration.TestDetails.TestSystemIdentityChanged"/> event when editing the test details in an editor.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.TestDetails._identityChanged">
+            <summary>
+            Flag to indicate that the editor has changed a critical property of the test details.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.Edit">
+            <summary>
+            Edit the test details using a PropertyGrid user interface. Fires the <see cref="E:TsdLib.Configuration.TestDetails.TestSystemIdentityChanged"/> event if the changes require a configuration refresh.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.GetSchema">
+            <summary>
+            Not used. Required for IXmlSerializable.
+            </summary>
+            <returns>null</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.WriteXml(System.Xml.XmlWriter)">
+            <summary>
+            Serialize the TestDetails object into its XML representation.
+            </summary>
+            <param name="writer">The <see cref="T:System.Xml.XmlWriter"/> stream to which the object is serialized.</param>
+        </member>
+        <member name="M:TsdLib.Configuration.TestDetails.ReadXml(System.Xml.XmlReader)">
+            <summary>
+            Deserialize and XML representation into a TestDetails object.
+            </summary>
+            <param name="reader">The <see cref="T:System.Xml.XmlReader"/> stream from which the object is deserialized.</param>
+        </member>
+        <member name="E:TsdLib.Configuration.TestDetails.TestSystemIdentityChanged">
+            <summary>
+            Event fired when the <see cref="T:TsdLib.Configuration.TestDetails"/> object is changed in such a way that the configuration data needs to be refreshed.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TestSystemName">
+            <summary>
+            Gets the name of the test system.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.SafeTestSystemName">
+            <summary>
+            Gets the name of the test system with illegal characters removed. Useful for creating namespaces or type names.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TestSystemVersion">
+            <summary>
+            Gets the version of the test system.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TestSystemMode">
+            <summary>
+            Gets the operating mode of the test system (ie. Development, Engineering or Production).
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TsdFrameworkVersion">
+            <summary>
+            Gets the version of the TSD Framework.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.RequestNumber">
+            <summary>
+            Gets the job/request number.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.UnitNumber">
+            <summary>
+            Gets the unit number for the current DUT.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TestType">
+            <summary>
+            Gets the type of test.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.TestStage">
+            <summary>
+            Gets the test stage.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.StationName">
+            <summary>
+            Gets the name of the host PC.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.TestDetails.FunctionalType">
+            <summary>
+            Gets the functional type (SFI: 1/MFI: 2/Acc: 3)
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.Utilities.ConfigExtensions">
+            <summary>
+            Contains static methods to retrieve additional information about config items and types.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.Utilities.ConfigExtensions.GetBaseTypeName(System.Type)">
+            <summary>
+            Gets the common base type name of the specified config type.
+            </summary>
+            <param name="configType">Type of the config item.</param>
+            <returns>The name of the common base type.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.Utilities.ConfigExtensions.GetConfigItemInterfaceName(System.Type)">
+            <summary>
+            Gets the name of the IXXXConfig interface implemented by the specified config item type.
+            </summary>
+            <param name="configType">Type of the config item.</param>
+            <returns>The name of the IXXXConfig interface.</returns>
+        </member>
+        <member name="T:TsdLib.Configuration.Utilities.VersionTypeEditor">
+            <summary>
+            A <see cref="T:System.Drawing.Design.UITypeEditor"/> used to edit <see cref="T:System.Version"/> objects in a <see cref="T:System.Windows.Forms.PropertyGrid"/>.
+            </summary>
+        </member>
+    </members>
+</doc>

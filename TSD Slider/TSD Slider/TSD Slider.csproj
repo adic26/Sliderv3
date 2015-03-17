@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A83C4594-D41A-40C9-8EFB-CB112302A1DF}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TSD_Slider</RootNamespace>
+    <AssemblyName>TSD Slider</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;REMICONTROL</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;REMICONTROL;INSTRUMENT_LIBRARY</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DBControl">
+      <HintPath>..\packages\DBControl.4.5.109\lib\net45\DBControl.dll</HintPath>
+    </Reference>
+    <Reference Include="DBControl.XmlSerializers">
+      <HintPath>..\packages\DBControl.4.5.109\lib\net45\DBControl.XmlSerializers.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="TsdLib.CodeGenerator">
+      <HintPath>..\packages\TsdLib.CodeGenerator.1.0.7-debug\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.Configuration">
+      <HintPath>..\packages\TsdLib.Configuration.1.1.0-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.Core">
+      <HintPath>..\packages\TsdLib.Core.1.1.0-debug\lib\net45\TsdLib.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.Forms">
+      <HintPath>..\packages\TsdLib.Forms.1.0.13\lib\net45\TsdLib.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.Measurements">
+      <HintPath>..\packages\TsdLib.Measurements.1.0.5491.27290\lib\net45\TsdLib.Measurements.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.TestSystem">
+      <HintPath>..\packages\TsdLib.TestSystem.1.1.0-debug\lib\net45\TsdLib.TestSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="TsdLib.UI">
+      <HintPath>..\packages\TsdLib.UI.1.1.0-debug\lib\net45\TsdLib.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="TSD_SliderProgram.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Configuration\Connections\DatabaseConfigConnection.cs" />
+    <Compile Include="Configuration\ProductConfig.cs" />
+    <Compile Include="Configuration\StationConfig.cs" />
+    <Compile Include="Configuration\TestConfig.cs" />
+    <Compile Include="Sequences\DummySequence.cs" />
+    <Compile Include="Controller\Controller.cs" />
+    <Compile Include="UI\Forms\TSD_SliderView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\TSD_SliderView.Designer.cs">
+      <DependentUpon>TSD_SliderView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="UI\Forms\TSD_SliderView.resx">
+      <DependentUpon>TSD_SliderView.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Instruments\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>"$(TargetPath)" -seq "$(ProjectDir)Sequences" true -testSystemMode Developer</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>rmdir /S /Q $(TargetDir)Instruments</PreBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\TsdLib.Build.1.1.22\build\TsdLib.Build.targets" Condition="Exists('..\packages\TsdLib.Build.1.1.22\build\TsdLib.Build.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\TsdLib.Build.1.1.22\build\TsdLib.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\TsdLib.Build.1.1.22\build\TsdLib.Build.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

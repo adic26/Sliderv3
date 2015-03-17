@@ -1,0 +1,511 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TsdLib.Core</name>
+    </assembly>
+    <members>
+        <member name="T:TsdLib.BasicCodeParser">
+            <summary>
+            A tool to generate a <see cref="T:System.CodeDom.CodeCompileUnit"/> from source code.
+            </summary>
+        </member>
+        <member name="M:TsdLib.BasicCodeParser.#ctor(System.String[])">
+            <summary>
+            Initialize a BasicCodeParser with zero or more assembly references.
+            </summary>
+            <param name="assemblyReferences">Zero or more library (*.dll) files to reference.</param>
+        </member>
+        <member name="M:TsdLib.BasicCodeParser.Parse(System.IO.TextReader)">
+            <summary>
+            Parse the source code contained in a <see cref="T:System.IO.TextReader"/> .
+            </summary>
+            <param name="sourceFile">A <see cref="T:System.IO.TextReader"/> object containing the source code as a string (<see cref="T:System.IO.StringReader"/>), a text file (<see cref="T:System.IO.StreamReader"/>) or another <see cref="T:System.IO.TextReader"/> implementation.</param>
+            <returns>A <see cref="T:System.CodeDom.CodeCompileUnit"/> containing the source code and required assembly references (where specified in the constructor).</returns>
+        </member>
+        <member name="T:TsdLib.Configuration.OperatingMode">
+            <summary>
+            Describes the various modes that the test system can operate under. Defines read-write access to configuration and result storage options.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.OperatingMode.Developer">
+            <summary>
+            All configuration is read-write. Results can only be stored under the Analysis stage.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.OperatingMode.Engineering">
+            <summary>
+            Built-in configuration is read-only, but new confgiurations can be created and modified. Results can only be stored under the Analysis stage.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.OperatingMode.Production">
+            <summary>
+            All configuration is read-only. Results can be stored to any test stage.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.FunctionalType">
+            <summary>
+            Type of OS image loaded on the DUT.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.FunctionalType.None">
+            <summary>
+            Do not include the OS image information.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.FunctionalType.SFI">
+            <summary>
+            Software Flash Image.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.FunctionalType.MFI">
+            <summary>
+            Manufacturing Flash Image.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Configuration.FunctionalType.Accessory">
+            <summary>
+            No OS image, in case of accessory.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.IConfigItem">
+            <summary>
+            Defines properties and methods required to interact with a configuration instance.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.IConfigItem.Clone">
+            <summary>
+            Performs a deep clone of the IConfigItem object.
+            </summary>
+            <returns>A new IConfigItem object.</returns>
+        </member>
+        <member name="P:TsdLib.Configuration.IConfigItem.Name">
+            <summary>
+            Gets or sets the name of the configuration item.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.IConfigItem.StoreInDatabase">
+            <summary>
+            True if the configuration is stored locally and on a database. False to store locally only.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.IConfigItem.IsDefault">
+            <summary>
+            True if the config item is an auto-generated default item.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.IConfigItem.IsValid">
+            <summary>
+            Returns true if the config item is valid in the current context.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.IConfigControl">
+            <summary>
+            Defines methods and events required to control test configuration on the UI.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.ITsdLibControl">
+            <summary>
+            Common interface that all UI controls should implement.
+            </summary>
+        </member>
+        <member name="M:TsdLib.UI.ITsdLibControl.SetState(TsdLib.State)">
+            <summary>
+            Set the behaviour of the control based on the current state of the test system.
+            </summary>
+            <param name="state">The current state of the test system.</param>
+        </member>
+        <member name="E:TsdLib.UI.IConfigControl.ViewEditConfiguration">
+            <summary>
+            Event fired when requesting to modify the test system configuration.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.StationConfigManager">
+            <summary>
+            Gets or sets the station configuration manager. Suitable for binding to a ListControl/>.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.ProductConfigManager">
+            <summary>
+            Gets or sets the product configuration manager. Suitable for binding to a ListControl/>.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.TestConfigManager">
+            <summary>
+            Gets or sets the test configuration manager. Suitable for binding to a ListControl/>.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.SequenceConfigManager">
+            <summary>
+            Gets or sets the sequence configuration manager. Suitable for binding to a ListControl/>.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.SelectedStationConfig">
+            <summary>
+            Gets the selected station configuration instance(s).
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.SelectedProductConfig">
+            <summary>
+            Gets the selected product configuration instance(s).
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.SelectedTestConfig">
+            <summary>
+            Gets the selected test configuration instance(s).
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IConfigControl.SelectedSequenceConfig">
+            <summary>
+            Gets the selected sequence configuration instance(s).
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.IConfigManager">
+            <summary>
+            Encapsulates configuration data and provides methods to save configuration.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.IConfigManager.Save">
+            <summary>
+            Saves the configuration data to persisted storage.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.IConfigManager.Reload">
+            <summary>
+            Reload the configuration data from persisted storage.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Configuration.IConfigManager.ConfigTypeName">
+            <summary>
+            Gets the type of configuration for this <see cref="T:TsdLib.Configuration.IConfigManager"/>. Useful when binding to a UI control.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Configuration.IConfigManager`1">
+            <summary>
+            Encapsulates configuration data and provides methods to add and reload configuration.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Configuration.IConfigManager`1.GetConfigGroup">
+            <summary>
+            Gets the configuration objects handled by the config manager.
+            </summary>
+            <returns>The configuration objects.</returns>
+        </member>
+        <member name="M:TsdLib.Configuration.IConfigManager`1.GetConfig(System.String)">
+            <summary>
+            Gets a specific configuration object by name.
+            </summary>
+            <param name="name">Name of the configuration object.</param>
+            <returns>The configuration object with the specified name.</returns>
+        </member>
+        <member name="T:TsdLib.Instrument.InstrumentEvents">
+            <summary>
+            Encapsulates events generated by instrument factories.
+            </summary>
+        </member>
+        <member name="M:TsdLib.Instrument.InstrumentEvents.FireConnected(System.Object,TsdLib.Instrument.IInstrument)">
+            <summary>
+            Fire the Connected event.
+            </summary>
+            <param name="sender">Factory responsible for raising the event.</param>
+            <param name="instrument">Newly connected instrument object.</param>
+        </member>
+        <member name="M:TsdLib.Instrument.InstrumentEvents.FireAttached(System.Object,System.String)">
+            <summary>
+            Fire the Attached event.
+            </summary>
+            <param name="sender">Mechanism responsible for raising the event.</param>
+            <param name="address">Newly connected instrument object.</param>
+        </member>
+        <member name="E:TsdLib.Instrument.InstrumentEvents.Connected">
+            <summary>
+            Event fired when connecting to a new instrument.
+            </summary>
+        </member>
+        <member name="E:TsdLib.Instrument.InstrumentEvents.Attached">
+            <summary>
+            Event fired when a new instrument is attached to the system.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Instrument.IInstrument">
+            <summary>
+            Common interface to expose model/serial numbers and firmware version get accessors.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.Description">
+            <summary>
+            Gets a description of the instrument, including connection information.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.ModelNumber">
+            <summary>
+            Gets the instrument model number.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.ModelNumberDescriptor">
+            <summary>
+            Gets the descriptor used for the <see cref="P:TsdLib.Instrument.IInstrument.ModelNumber"/> property.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.SerialNumber">
+            <summary>
+            Gets the instrument serial number.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.SerialNumberDescriptor">
+            <summary>
+            Gets the descriptor used for the <see cref="P:TsdLib.Instrument.IInstrument.SerialNumber"/> property.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.FirmwareVersion">
+            <summary>
+            Gets the instrument firmware version.
+            </summary>
+        </member>
+        <member name="P:TsdLib.Instrument.IInstrument.FirmwareVersionDescriptor">
+            <summary>
+            Gets the descriptor used for the <see cref="P:TsdLib.Instrument.IInstrument.FirmwareVersion"/> property.
+            </summary>
+        </member>
+        <member name="T:TsdLib.TestSystem.ICancellationManager">
+            <summary>
+            Contains operations related to cancellation.
+            </summary>
+        </member>
+        <member name="M:TsdLib.TestSystem.ICancellationManager.Abort(System.Exception)">
+            <summary>
+            Abort the test sequence due to user cancellation or error.
+            </summary>
+            <param name="error">If cancelling due to error, pass the responsible exception. If cancelling to to user, pass null.</param>
+        </member>
+        <member name="P:TsdLib.TestSystem.ICancellationManager.CancelledByUser">
+            <summary>
+            Returns true if the test sequence was cancelled by the user. False if it was cancelled due to internal error.
+            </summary>
+        </member>
+        <member name="P:TsdLib.TestSystem.ICancellationManager.Error">
+            <summary>
+            Gets the internal error responsible for test sequence cancellation.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.IMeasurementDisplayControl">
+            <summary>
+            Defines methods required to display measurements on the UI.
+            </summary>
+        </member>
+        <member name="M:TsdLib.UI.IMeasurementDisplayControl.AddMeasurement(TsdLib.Measurements.IMeasurement)">
+            <summary>
+            Add a measurement to the UI display.
+            </summary>
+            <param name="measurement">Measurement to add.</param>
+        </member>
+        <member name="M:TsdLib.UI.IMeasurementDisplayControl.ClearMeasurements">
+            <summary>
+            Clears all measurements from the UI display.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.IMeasurementDisplayControl.DisplayLimitsAndResult">
+            <summary>
+            True to display or false to hide the upper/lower limit and result display.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.ITestDetailsControl">
+            <summary>
+            Defines methods and events required to control test details on the UI.
+            </summary>
+        </member>
+        <member name="E:TsdLib.UI.ITestDetailsControl.EditTestDetails">
+            <summary>
+            Event fired when requesting to edit the test details.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.ITestInfoDisplayControl">
+            <summary>
+            Defines methods required to display test information on the UI.
+            </summary>
+        </member>
+        <member name="M:TsdLib.UI.ITestInfoDisplayControl.AddTestInfo(TsdLib.Measurements.ITestInfo)">
+            <summary>
+            Add test information to the UI display.
+            </summary>
+            <param name="testInfo">Test information to add.</param>
+        </member>
+        <member name="M:TsdLib.UI.ITestInfoDisplayControl.ClearTestInfo">
+            <summary>
+            Clear the test information from the UI.
+            </summary>
+        </member>
+        <member name="E:TsdLib.UI.ITestSequenceControl.ExecuteTestSequence">
+            <summary>
+            Event fired when requesting to execute the Test Sequence.
+            </summary>
+        </member>
+        <member name="E:TsdLib.UI.ITestSequenceControl.AbortTestSequence">
+            <summary>
+            Event fired when requesting to abort the Test Sequence current in progress.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.ITraceListenerControl">
+            <summary>
+            Defines properties required to add a <see cref="T:System.Diagnostics.TraceListener"/> to the UI.
+            </summary>
+        </member>
+        <member name="M:TsdLib.UI.ITraceListenerControl.Clear">
+            <summary>
+            Clear the trace output from the UI.
+            </summary>
+        </member>
+        <member name="P:TsdLib.UI.ITraceListenerControl.Listener">
+            <summary>
+            Gets a trace listener.
+            </summary>
+        </member>
+        <member name="T:TsdLib.UI.IView">
+            <summary>
+            Interface used to connect UI implementations to the TsdLib framework.
+            </summary>
+        </member>
+        <member name="M:TsdLib.UI.IView.SetState(TsdLib.State)">
+            <summary>
+            Set the appearance and behaviour of IU controls, based on the current status of the system.
+            </summary>
+            <param name="state">State to set.</param>
+        </member>
+        <member name="M:TsdLib.UI.IView.SetTitle(System.String)">
+            <summary>
+            Sets the text displayed in the title section of the UI.
+            </summary>
+            <param name="title">Text to display.</param>
+        </member>
+        <member name="M:TsdLib.UI.IView.AddData(System.Object)">
+            <summary>
+            Add user-defined data to the UI display.
+            </summary>
+            <param name="data">Data object to add.</param>
+        </member>
+        <member name="P:TsdLib.UI.IView.TraceListenerControl">
+            <summary>
+            Gets a TraceListener used to write trace and debug information to the user interface.
+            </summary>
+        </member>
+        <member name="E:TsdLib.UI.IView.UIClosing">
+            <summary>
+            Event fired when the UI is about to close.
+            </summary>
+        </member>
+        <member name="T:TsdLib.Measurements.MeasurementResult">
+            <summary>
+            Describes possible measurement outcomes.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Measurements.MeasurementResult.Undefined">
+            <summary>
+            The measurement has not yet been performed.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Measurements.MeasurementResult.Pass">
+            <summary>
+            The measurement is within the specified range.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Measurements.MeasurementResult.Fail">
+            <summary>
+            The measurement is outside the specified range.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Measurements.MeasurementResult.Fail_BelowLimit">
+            <summary>
+            The measurement is below the specified range.
+            </summary>
+        </member>
+        <member name="F:TsdLib.Measurements.MeasurementResult.Fail_AboveLimit">
+            <summary>
+            The measurement is above the specified range.
+            </summary>
+        </member>
+        <member name="T:TsdLib.SpecialFolders">
+            <summary>
+            Defines special folders used by the TsdLib Framework.
+            </summary>
+        </member>
+        <member name="M:TsdLib.SpecialFolders.GetErrorLogs(System.String)">
+            <summary>
+            Gets the folder where trace logs are stored.
+            </summary>
+        </member>
+        <member name="M:TsdLib.SpecialFolders.GetTraceLogs(System.String)">
+            <summary>
+            Gets the folder where trace logs are stored.
+            </summary>
+        </member>
+        <member name="M:TsdLib.SpecialFolders.GetResultsFolder(System.String)">
+            <summary>
+            Gets the folder where Test Sequence measurements are stored for the specified test system.
+            </summary>
+            <param name="testSystemName">Name of the test system for which to get the measurements folder.</param>
+            <returns>The absolute path to the measurements folder.</returns>
+        </member>
+        <member name="M:TsdLib.SpecialFolders.GetResultsFile(TsdLib.Configuration.ITestDetails,TsdLib.Measurements.ITestSummary,System.String,System.IO.DirectoryInfo)">
+            <summary>
+            Creates a new uniquely named file for writing test results.
+            </summary>
+            <param name="details">An <see cref="T:TsdLib.Configuration.ITestDetails"/> object containing metadata information relevent to the test.</param>
+            <param name="summary">An <see cref="T:TsdLib.Measurements.ITestSummary"/> object containing information about the results of a test.</param>
+            <param name="extension">The file extension to use for the new file.</param>
+            <param name="directoryInfo">OPTIONAL: An alternate directory to use. If not specified, the default test results directory will be used.</param>
+            <returns>An open <see cref="T:System.IO.FileStream"/> object used to write test results information.</returns>
+        </member>
+        <member name="M:TsdLib.SpecialFolders.GetResultsFileName(TsdLib.Configuration.ITestDetails,TsdLib.Measurements.ITestSummary,System.String)">
+            <summary>
+            Creates a unique file name based on the specified test details and summary.
+            </summary>
+            <param name="details">An <see cref="T:TsdLib.Configuration.ITestDetails"/> object containing metadata information relevent to the test.</param>
+            <param name="summary">An <see cref="T:TsdLib.Measurements.ITestSummary"/> object containing information about the results of a test.</param>
+            <param name="extension">The file extension to apply.</param>
+            <returns>A unique string that can be used to generate a test results file.</returns>
+        </member>
+        <member name="P:TsdLib.SpecialFolders.Configuration">
+            <summary>
+            Gets the folder where configuration data is stored.
+            </summary>
+        </member>
+        <member name="T:TsdLib.State">
+            <summary>
+            Describes various states that the system can be in.
+            </summary>
+        </member>
+        <member name="F:TsdLib.State.TestStarting">
+            <summary>
+            A test is currently running.
+            </summary>
+        </member>
+        <member name="F:TsdLib.State.ReadyToTest">
+            <summary>
+            The system is ready to configure or start a test. 
+            </summary>
+        </member>
+        <member name="T:TsdLib.TsdLibException">
+            <summary>
+            Base exception class for TsdLib applications.
+            </summary>
+        </member>
+        <member name="M:TsdLib.TsdLibException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the TsdLibException class with a message and inner exception.
+            </summary>
+            <param name="message">Message describing the exception.</param>
+            <param name="inner">OPTIONAL: Another exception that has caused the specified exception.</param>
+        </member>
+        <member name="M:TsdLib.TsdLibException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Deserialization constructor used by the .NET Framework to initialize an instance of the <see cref="T:TsdLib.TsdLibException"/> class from serialized data.
+            </summary>
+            <param name="info">The SerialzationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains the contextual information about the source or destination.</param>
+        </member>
+        <member name="P:TsdLib.TsdLibException.HelpLink">
+            <summary>
+            Gets a link to the database help content for this exception.
+            </summary>
+        </member>
+    </members>
+</doc>
