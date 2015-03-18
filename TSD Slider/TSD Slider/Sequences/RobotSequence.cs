@@ -2,6 +2,7 @@
 using TSD_Slider.Configuration;
 using TsdLib.Measurements;
 using TsdLib.TestSystem.TestSequence;
+using System.Diagnostics;
 
 namespace TSD_Slider.Sequences
 {
@@ -32,6 +33,19 @@ namespace TSD_Slider.Sequences
             //        AddMeasurement(measurement);
             //    }
             //}
+
+            //Initialize all the event handlers
+            //controller - do not have access , but do not need it
+            
+            //view - do not have access
+            
+            //robot - have access
+            Trace.WriteLine("Please press Start to start testing");
+
+            //Sequence
+            //1.  Connect
+
+            //2. Start Testing
 
 
 

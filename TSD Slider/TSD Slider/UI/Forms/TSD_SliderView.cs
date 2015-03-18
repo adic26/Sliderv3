@@ -384,10 +384,6 @@ namespace TSD_Slider.UI.Forms
         /// </summary>
         public event EventHandler<CancelEventArgs> UIClosing;
 
-        private void button_ExecuteTestSequence_Click_1(object sender, EventArgs e)
-        {
-
-        }
 
        
     }

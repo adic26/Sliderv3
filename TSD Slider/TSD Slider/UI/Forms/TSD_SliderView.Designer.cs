@@ -28,8 +28,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.MeasurementName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MeasuredValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Units = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -81,11 +81,11 @@
             this.btnFtpTest = new System.Windows.Forms.Button();
             this.tbEngScreen = new System.Windows.Forms.TabPage();
             this.tbGraphs = new System.Windows.Forms.TabPage();
+            this.ResultsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.progCalibration = new System.Windows.Forms.ProgressBar();
             this.label13 = new System.Windows.Forms.Label();
             this.button_ExecuteTestSequence = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
-            this.ResultsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbSliderCycle.SuspendLayout();
@@ -269,6 +269,7 @@
             this.btnConnect.TabIndex = 21;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // lblStatus
             // 
@@ -504,7 +505,7 @@
             this.tbData.Controls.Add(this.btnFtpTest);
             this.tbData.Location = new System.Drawing.Point(4, 22);
             this.tbData.Name = "tbData";
-            this.tbData.Size = new System.Drawing.Size(550, 583);
+            this.tbData.Size = new System.Drawing.Size(550, 565);
             this.tbData.TabIndex = 3;
             this.tbData.Text = "Data";
             this.tbData.UseVisualStyleBackColor = true;
@@ -549,7 +550,7 @@
             // 
             this.tbEngScreen.Location = new System.Drawing.Point(4, 22);
             this.tbEngScreen.Name = "tbEngScreen";
-            this.tbEngScreen.Size = new System.Drawing.Size(550, 583);
+            this.tbEngScreen.Size = new System.Drawing.Size(550, 565);
             this.tbEngScreen.TabIndex = 2;
             this.tbEngScreen.Text = "Engineering Screen";
             this.tbEngScreen.UseVisualStyleBackColor = true;
@@ -564,6 +565,18 @@
             this.tbGraphs.TabIndex = 1;
             this.tbGraphs.Text = "Graphs";
             this.tbGraphs.UseVisualStyleBackColor = true;
+            // 
+            // ResultsChart
+            // 
+            chartArea1.Name = "ChartArea1";
+            this.ResultsChart.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.ResultsChart.Legends.Add(legend1);
+            this.ResultsChart.Location = new System.Drawing.Point(31, 76);
+            this.ResultsChart.Name = "ResultsChart";
+            this.ResultsChart.Size = new System.Drawing.Size(475, 413);
+            this.ResultsChart.TabIndex = 0;
+            this.ResultsChart.Text = "chart1";
             // 
             // progCalibration
             // 
@@ -590,7 +603,7 @@
             this.button_ExecuteTestSequence.TabIndex = 27;
             this.button_ExecuteTestSequence.Text = "Start";
             this.button_ExecuteTestSequence.UseVisualStyleBackColor = true;
-            this.button_ExecuteTestSequence.Click += new System.EventHandler(this.button_ExecuteTestSequence_Click_1);
+            this.button_ExecuteTestSequence.Click += new System.EventHandler(this.button_ExecuteTestSequence_Click);
             // 
             // btnStop
             // 
@@ -601,18 +614,7 @@
             this.btnStop.TabIndex = 28;
             this.btnStop.Text = "Stop";
             this.btnStop.UseVisualStyleBackColor = true;
-            // 
-            // ResultsChart
-            // 
-            chartArea2.Name = "ChartArea1";
-            this.ResultsChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.ResultsChart.Legends.Add(legend2);
-            this.ResultsChart.Location = new System.Drawing.Point(31, 76);
-            this.ResultsChart.Name = "ResultsChart";
-            this.ResultsChart.Size = new System.Drawing.Size(475, 413);
-            this.ResultsChart.TabIndex = 0;
-            this.ResultsChart.Text = "chart1";
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
             // TSD_SliderView
             // 

@@ -33,11 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DBControl">
-      <HintPath>..\packages\DBControl.4.5.109\lib\net45\DBControl.dll</HintPath>
+    <Reference Include="DBControl, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DBControl.4.5.221\lib\net45\DBControl.dll</HintPath>
     </Reference>
-    <Reference Include="DBControl.XmlSerializers">
-      <HintPath>..\packages\DBControl.4.5.109\lib\net45\DBControl.XmlSerializers.dll</HintPath>
+    <Reference Include="DBControl.XmlSerializers, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\DBControl.4.5.221\lib\net45\DBControl.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="DynamicInterop">
       <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
@@ -67,8 +69,9 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="TsdLib.CodeGenerator">
-      <HintPath>..\packages\TsdLib.CodeGenerator.1.0.7-debug\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
+    <Reference Include="TsdLib.CodeGenerator, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.CodeGenerator.1.0.78\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
     </Reference>
     <Reference Include="TsdLib.Configuration">
       <HintPath>..\packages\TsdLib.Configuration.1.1.0-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
@@ -118,6 +121,12 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Scripts\characterization.r" />
+    <None Include="Scripts\characterization_heatmap.r" />
+    <None Include="Scripts\characterize_robot.r" />
+    <None Include="Scripts\datasetReturn.r" />
+    <None Include="Scripts\plots.r" />
+    <None Include="Scripts\sliderDataToComputer.r" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UI\Forms\TSD_SliderView.resx">

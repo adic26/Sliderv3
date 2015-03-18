@@ -37,14 +37,13 @@ namespace TSD_Slider
             : base(testDetails,databaseConnection,localDomain)
         {
             //View Events
+            myView = this.UI;
             
             myView.startButton += new System.EventHandler(myView_startButton);
             myView.stopButton += new System.EventHandler(myView_stopButton);
             myView.connectButton += new EventHandler(myView_connectButton);
             myView.dataTestButton += getCalibrationRawData;
             myView.TESTLift += ROBOT_getLiftOffValue;
-
-
 
             //Robot Events
             ROBOT = new tsdFanuc();
@@ -266,8 +265,6 @@ namespace TSD_Slider
         {
             myView.updateTextBox(e);
         }
-        //
-        //: //base(devMode, "sliderv2", Application.ProductVersion, new DatabaseFolderConnection(@"C:\temp\RemiSettingsTest")) { }
 
         async private void executeSliderTest()
         {
