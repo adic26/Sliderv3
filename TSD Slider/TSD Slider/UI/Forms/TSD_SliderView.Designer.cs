@@ -28,26 +28,19 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.MeasurementName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MeasuredValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Units = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.LowerLimit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UpperLimit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Result = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.traceListenerTextBoxControl = new TsdLib.UI.Controls.TraceListenerTextBoxControl();
-            this.multiConfigControl = new TsdLib.UI.Controls.MultiConfigControl();
-            this.testDetailsControl = new TsdLib.UI.Controls.TestDetailsControl();
-            this.testSequenceControl = new TsdLib.UI.Controls.TestSequenceControl();
-            this.testInfoDataGridViewControl = new TsdLib.UI.Controls.TestInfoDataGridViewControl();
-            this.measurementDataGridViewControl = new TsdLib.UI.Controls.MeasurementDataGridViewControl();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.testCasesMenuItem = new TsdLib.UI.Controls.TestCasesMenuItem(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbSliderCycle = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.btnConnect = new System.Windows.Forms.Button();
             this.lblStatus = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
             this.txtRegCycCompleteName = new System.Windows.Forms.TextBox();
@@ -76,16 +69,17 @@
             this.lblTitle = new System.Windows.Forms.Label();
             this.tbData = new System.Windows.Forms.TabPage();
             this.charData1 = new System.Windows.Forms.DataGridView();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnREngine = new System.Windows.Forms.Button();
-            this.btnFtpTest = new System.Windows.Forms.Button();
             this.tbEngScreen = new System.Windows.Forms.TabPage();
             this.tbGraphs = new System.Windows.Forms.TabPage();
             this.ResultsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.progCalibration = new System.Windows.Forms.ProgressBar();
             this.label13 = new System.Windows.Forms.Label();
-            this.button_ExecuteTestSequence = new System.Windows.Forms.Button();
-            this.btnStop = new System.Windows.Forms.Button();
+            this.traceListenerTextBoxControl = new TsdLib.UI.Controls.TraceListenerTextBoxControl();
+            this.multiConfigControl = new TsdLib.UI.Controls.MultiConfigControl();
+            this.testDetailsControl = new TsdLib.UI.Controls.TestDetailsControl();
+            this.testSequenceControl = new TsdLib.UI.Controls.TestSequenceControl();
+            this.testInfoDataGridViewControl = new TsdLib.UI.Controls.TestInfoDataGridViewControl();
+            this.measurementDataGridViewControl = new TsdLib.UI.Controls.MeasurementDataGridViewControl();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbSliderCycle.SuspendLayout();
@@ -145,64 +139,13 @@
             this.Result.Name = "Result";
             this.Result.ReadOnly = true;
             // 
-            // traceListenerTextBoxControl
-            // 
-            this.traceListenerTextBoxControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.traceListenerTextBoxControl.Location = new System.Drawing.Point(16, 605);
-            this.traceListenerTextBoxControl.Name = "traceListenerTextBoxControl";
-            this.traceListenerTextBoxControl.Size = new System.Drawing.Size(1172, 225);
-            this.traceListenerTextBoxControl.TabIndex = 5;
-            // 
-            // multiConfigControl
-            // 
-            this.multiConfigControl.FirstColumnSizePercent = 50F;
-            this.multiConfigControl.Location = new System.Drawing.Point(12, 38);
-            this.multiConfigControl.Name = "multiConfigControl";
-            this.multiConfigControl.Size = new System.Drawing.Size(387, 222);
-            this.multiConfigControl.TabIndex = 6;
-            // 
-            // testDetailsControl
-            // 
-            this.testDetailsControl.Location = new System.Drawing.Point(448, 38);
-            this.testDetailsControl.Name = "testDetailsControl";
-            this.testDetailsControl.Size = new System.Drawing.Size(188, 80);
-            this.testDetailsControl.TabIndex = 4;
-            // 
-            // testSequenceControl
-            // 
-            this.testSequenceControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.testSequenceControl.Location = new System.Drawing.Point(448, 145);
-            this.testSequenceControl.Name = "testSequenceControl";
-            this.testSequenceControl.Size = new System.Drawing.Size(188, 115);
-            this.testSequenceControl.TabIndex = 3;
-            // 
-            // testInfoDataGridViewControl
-            // 
-            this.testInfoDataGridViewControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.testInfoDataGridViewControl.Location = new System.Drawing.Point(679, 38);
-            this.testInfoDataGridViewControl.Name = "testInfoDataGridViewControl";
-            this.testInfoDataGridViewControl.Size = new System.Drawing.Size(505, 222);
-            this.testInfoDataGridViewControl.TabIndex = 2;
-            // 
-            // measurementDataGridViewControl
-            // 
-            this.measurementDataGridViewControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.measurementDataGridViewControl.DisplayLimitsAndResult = true;
-            this.measurementDataGridViewControl.Location = new System.Drawing.Point(12, 309);
-            this.measurementDataGridViewControl.Name = "measurementDataGridViewControl";
-            this.measurementDataGridViewControl.Size = new System.Drawing.Size(1172, 282);
-            this.measurementDataGridViewControl.TabIndex = 1;
-            // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.testCasesMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1756, 24);
+            this.menuStrip.Size = new System.Drawing.Size(1548, 24);
             this.menuStrip.TabIndex = 8;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -218,10 +161,10 @@
             this.tabControl1.Controls.Add(this.tbData);
             this.tabControl1.Controls.Add(this.tbEngScreen);
             this.tabControl1.Controls.Add(this.tbGraphs);
-            this.tabControl1.Location = new System.Drawing.Point(1190, 38);
+            this.tabControl1.Location = new System.Drawing.Point(984, 38);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(558, 591);
+            this.tabControl1.Size = new System.Drawing.Size(558, 792);
             this.tabControl1.TabIndex = 24;
             // 
             // tbSliderCycle
@@ -232,14 +175,13 @@
             this.tbSliderCycle.Location = new System.Drawing.Point(4, 22);
             this.tbSliderCycle.Name = "tbSliderCycle";
             this.tbSliderCycle.Padding = new System.Windows.Forms.Padding(3);
-            this.tbSliderCycle.Size = new System.Drawing.Size(550, 565);
+            this.tbSliderCycle.Size = new System.Drawing.Size(550, 766);
             this.tbSliderCycle.TabIndex = 0;
             this.tbSliderCycle.Text = "Slider Cycle";
             this.tbSliderCycle.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.btnConnect);
             this.groupBox2.Controls.Add(this.lblStatus);
             this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.txtRegCycCompleteName);
@@ -256,27 +198,17 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Location = new System.Drawing.Point(27, 231);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(513, 325);
+            this.groupBox2.Size = new System.Drawing.Size(513, 517);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Fanuc";
-            // 
-            // btnConnect
-            // 
-            this.btnConnect.Location = new System.Drawing.Point(222, 274);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(82, 35);
-            this.btnConnect.TabIndex = 21;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
             // lblStatus
             // 
             this.lblStatus.AutoSize = true;
             this.lblStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblStatus.ForeColor = System.Drawing.Color.Black;
-            this.lblStatus.Location = new System.Drawing.Point(259, 222);
+            this.lblStatus.Location = new System.Drawing.Point(253, 382);
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Size = new System.Drawing.Size(192, 31);
             this.lblStatus.TabIndex = 20;
@@ -286,7 +218,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label11.Location = new System.Drawing.Point(94, 232);
+            this.label11.Location = new System.Drawing.Point(88, 392);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(145, 20);
             this.label11.TabIndex = 19;
@@ -500,12 +432,9 @@
             // tbData
             // 
             this.tbData.Controls.Add(this.charData1);
-            this.tbData.Controls.Add(this.button1);
-            this.tbData.Controls.Add(this.btnREngine);
-            this.tbData.Controls.Add(this.btnFtpTest);
             this.tbData.Location = new System.Drawing.Point(4, 22);
             this.tbData.Name = "tbData";
-            this.tbData.Size = new System.Drawing.Size(550, 565);
+            this.tbData.Size = new System.Drawing.Size(550, 766);
             this.tbData.TabIndex = 3;
             this.tbData.Text = "Data";
             this.tbData.UseVisualStyleBackColor = true;
@@ -513,44 +442,16 @@
             // charData1
             // 
             this.charData1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.charData1.Location = new System.Drawing.Point(50, 85);
+            this.charData1.Location = new System.Drawing.Point(24, 20);
             this.charData1.Name = "charData1";
-            this.charData1.Size = new System.Drawing.Size(447, 471);
+            this.charData1.Size = new System.Drawing.Size(507, 716);
             this.charData1.TabIndex = 30;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(346, 23);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(108, 35);
-            this.button1.TabIndex = 29;
-            this.button1.Text = "evaluationTest";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // btnREngine
-            // 
-            this.btnREngine.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnREngine.Location = new System.Drawing.Point(23, 17);
-            this.btnREngine.Name = "btnREngine";
-            this.btnREngine.Size = new System.Drawing.Size(179, 47);
-            this.btnREngine.TabIndex = 28;
-            this.btnREngine.Text = "Testing R";
-            this.btnREngine.UseVisualStyleBackColor = true;
-            // 
-            // btnFtpTest
-            // 
-            this.btnFtpTest.Location = new System.Drawing.Point(225, 23);
-            this.btnFtpTest.Name = "btnFtpTest";
-            this.btnFtpTest.Size = new System.Drawing.Size(82, 35);
-            this.btnFtpTest.TabIndex = 27;
-            this.btnFtpTest.Text = "FTP Test";
-            this.btnFtpTest.UseVisualStyleBackColor = true;
             // 
             // tbEngScreen
             // 
             this.tbEngScreen.Location = new System.Drawing.Point(4, 22);
             this.tbEngScreen.Name = "tbEngScreen";
-            this.tbEngScreen.Size = new System.Drawing.Size(550, 565);
+            this.tbEngScreen.Size = new System.Drawing.Size(550, 766);
             this.tbEngScreen.TabIndex = 2;
             this.tbEngScreen.Text = "Engineering Screen";
             this.tbEngScreen.UseVisualStyleBackColor = true;
@@ -561,17 +462,17 @@
             this.tbGraphs.Location = new System.Drawing.Point(4, 22);
             this.tbGraphs.Name = "tbGraphs";
             this.tbGraphs.Padding = new System.Windows.Forms.Padding(3);
-            this.tbGraphs.Size = new System.Drawing.Size(550, 565);
+            this.tbGraphs.Size = new System.Drawing.Size(550, 766);
             this.tbGraphs.TabIndex = 1;
             this.tbGraphs.Text = "Graphs";
             this.tbGraphs.UseVisualStyleBackColor = true;
             // 
             // ResultsChart
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ResultsChart.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.ResultsChart.Legends.Add(legend1);
+            chartArea2.Name = "ChartArea1";
+            this.ResultsChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.ResultsChart.Legends.Add(legend2);
             this.ResultsChart.Location = new System.Drawing.Point(31, 76);
             this.ResultsChart.Name = "ResultsChart";
             this.ResultsChart.Size = new System.Drawing.Size(475, 413);
@@ -582,7 +483,7 @@
             // 
             this.progCalibration.Location = new System.Drawing.Point(93, 280);
             this.progCalibration.Name = "progCalibration";
-            this.progCalibration.Size = new System.Drawing.Size(1072, 23);
+            this.progCalibration.Size = new System.Drawing.Size(885, 23);
             this.progCalibration.TabIndex = 25;
             // 
             // label13
@@ -594,35 +495,62 @@
             this.label13.TabIndex = 26;
             this.label13.Text = "Calibration:";
             // 
-            // button_ExecuteTestSequence
+            // traceListenerTextBoxControl
             // 
-            this.button_ExecuteTestSequence.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button_ExecuteTestSequence.Location = new System.Drawing.Point(1247, 699);
-            this.button_ExecuteTestSequence.Name = "button_ExecuteTestSequence";
-            this.button_ExecuteTestSequence.Size = new System.Drawing.Size(182, 75);
-            this.button_ExecuteTestSequence.TabIndex = 27;
-            this.button_ExecuteTestSequence.Text = "Start";
-            this.button_ExecuteTestSequence.UseVisualStyleBackColor = true;
-            this.button_ExecuteTestSequence.Click += new System.EventHandler(this.button_ExecuteTestSequence_Click);
+            this.traceListenerTextBoxControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.traceListenerTextBoxControl.Location = new System.Drawing.Point(16, 597);
+            this.traceListenerTextBoxControl.Name = "traceListenerTextBoxControl";
+            this.traceListenerTextBoxControl.Size = new System.Drawing.Size(962, 233);
+            this.traceListenerTextBoxControl.TabIndex = 5;
             // 
-            // btnStop
+            // multiConfigControl
             // 
-            this.btnStop.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnStop.Location = new System.Drawing.Point(1522, 699);
-            this.btnStop.Name = "btnStop";
-            this.btnStop.Size = new System.Drawing.Size(178, 75);
-            this.btnStop.TabIndex = 28;
-            this.btnStop.Text = "Stop";
-            this.btnStop.UseVisualStyleBackColor = true;
-            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            this.multiConfigControl.FirstColumnSizePercent = 50F;
+            this.multiConfigControl.Location = new System.Drawing.Point(12, 38);
+            this.multiConfigControl.Name = "multiConfigControl";
+            this.multiConfigControl.Size = new System.Drawing.Size(387, 222);
+            this.multiConfigControl.TabIndex = 6;
+            // 
+            // testDetailsControl
+            // 
+            this.testDetailsControl.Location = new System.Drawing.Point(448, 38);
+            this.testDetailsControl.Name = "testDetailsControl";
+            this.testDetailsControl.Size = new System.Drawing.Size(188, 80);
+            this.testDetailsControl.TabIndex = 4;
+            // 
+            // testSequenceControl
+            // 
+            this.testSequenceControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.testSequenceControl.Location = new System.Drawing.Point(448, 145);
+            this.testSequenceControl.Name = "testSequenceControl";
+            this.testSequenceControl.Size = new System.Drawing.Size(188, 115);
+            this.testSequenceControl.TabIndex = 3;
+            // 
+            // testInfoDataGridViewControl
+            // 
+            this.testInfoDataGridViewControl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.testInfoDataGridViewControl.Location = new System.Drawing.Point(679, 38);
+            this.testInfoDataGridViewControl.Name = "testInfoDataGridViewControl";
+            this.testInfoDataGridViewControl.Size = new System.Drawing.Size(299, 222);
+            this.testInfoDataGridViewControl.TabIndex = 2;
+            // 
+            // measurementDataGridViewControl
+            // 
+            this.measurementDataGridViewControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.measurementDataGridViewControl.DisplayLimitsAndResult = true;
+            this.measurementDataGridViewControl.Location = new System.Drawing.Point(-196, 309);
+            this.measurementDataGridViewControl.Name = "measurementDataGridViewControl";
+            this.measurementDataGridViewControl.Size = new System.Drawing.Size(1174, 282);
+            this.measurementDataGridViewControl.TabIndex = 1;
             // 
             // TSD_SliderView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1756, 842);
-            this.Controls.Add(this.btnStop);
-            this.Controls.Add(this.button_ExecuteTestSequence);
+            this.ClientSize = new System.Drawing.Size(1548, 842);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.progCalibration);
             this.Controls.Add(this.tabControl1);
@@ -679,7 +607,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tbSliderCycle;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtRegCycCompleteName;
@@ -707,16 +634,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.TabPage tbData;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnREngine;
-        private System.Windows.Forms.Button btnFtpTest;
         private System.Windows.Forms.TabPage tbGraphs;
         private System.Windows.Forms.TabPage tbEngScreen;
         private System.Windows.Forms.DataGridView charData1;
         private System.Windows.Forms.ProgressBar progCalibration;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Button button_ExecuteTestSequence;
-        private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.DataVisualization.Charting.Chart ResultsChart;
     }
 }

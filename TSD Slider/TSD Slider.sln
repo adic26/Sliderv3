@@ -3,6 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSD Slider", "TSD Slider\TSD Slider.csproj", "{A83C4594-D41A-40C9-8EFB-CB112302A1DF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Developer", "Developer", "{073005BD-8667-48D3-8A0A-5E01339DAB31}"
+	ProjectSection(SolutionItems) = preProject
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\ProductConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\ProductConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\SequenceConfigCommon.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\SequenceConfigCommon.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\StationConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\StationConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\TestConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\TestConfig.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ROBOT2 Configuration", "ROBOT2 Configuration", "{D1641D3A-169B-4D0C-98B5-4191455117F3}"
+	ProjectSection(SolutionItems) = preProject
+		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\ProductConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\ProductConfig.xml
+		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\StationConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\StationConfig.xml
+		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\TestConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\TestConfig.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
