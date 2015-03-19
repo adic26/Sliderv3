@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 namespace TSD_Slider.Communication
 {
     [Serializable]
-    public struct IntStruct
+    public struct ConnectionStatus
     {
-        public int data;
-        public string context;
-        public IntStruct(int d, string c) { this.data = d; this.context = c; }
+        public bool status;
+        public ConnectionStatus(bool status) { this.status = status; }
     }
 }

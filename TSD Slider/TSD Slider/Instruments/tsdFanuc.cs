@@ -40,8 +40,6 @@ namespace TSD_Slider.Instruments
         public event EventHandler<bool> getLiftOffValue;
         private IProgress<int> progressBar;
         public bool OkToEvaluateLiftOff = false;
-        private Timer cycleTimer;
-        private Timer calibrationTimer;
         private string IPAddress;
 
         public int PcCompletedCycles
@@ -91,6 +89,9 @@ namespace TSD_Slider.Instruments
             copyRegisters = new Dictionary<string, int>();
             dataRegisters = new Dictionary<string, FRCRegNumeric>();
             dataRegisterNameToValue = new Dictionary<string, string>();
+
+            //Instance Declarations
+            
 
         }
 
@@ -158,23 +159,29 @@ namespace TSD_Slider.Instruments
                 //Place Holders for Task Change Start and Stop Monitor are described in : 
                 //1.  startSliderTPProgram
                 //2.  Under Abort Status under mobjTasks_Change method
+
                 mobjTasks = mobjRobot.Tasks;
-                mobjTasks.Change += new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+                allMyProg = mobjRobot.Programs;
+                allSysRegisters = mobjRobot.RegPositions;
+                mobjNumericRegisters = mobjRobot.RegNumerics;
+               
+                //mobjTasks.Change += new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+                
 
                 //All Programs Currently Listed
-                allMyProg = mobjRobot.Programs;
+                
                 allMyProg.Select += new IProgramsEvents_SelectEventHandler(ProgramSelected);
                 //txtCurrProgram.Text = allMyProg.Selected;
 
                 //All system registers currently listed
-                allSysRegisters = mobjRobot.RegPositions;
-                allSysRegisters.Change += new ISysPositionsEvents_ChangeEventHandler(mobjSysPosition_Change);
+                
+                //allSysRegisters.Change += new ISysPositionsEvents_ChangeEventHandler(mobjSysPosition_Change);
 
                 //Selecting all data registesr
-                mobjNumericRegisters = mobjRobot.RegNumerics;
+                
 
                 //monitor register SLIDER_COMPLETED
-                mobjNumericRegisters.Change += new IVarsEvents_ChangeEventHandler(register_Change);
+                //mobjNumericRegisters.Change += new IVarsEvents_ChangeEventHandler(register_Change);
 
                 //Find all register names
                 findAllDataRegisters();
@@ -278,18 +285,7 @@ namespace TSD_Slider.Instruments
 
         }
 
-        private void timer_StartCycleTimer(int timeInMS)
-        {
-            TimerCallback tcb = new TimerCallback(checkCycleRobotStatus);
-            if (cycleTimer == null)
-                cycleTimer = new Timer(tcb, "Checking slider Connection Status...", timeInMS, timeInMS);
-            else
-            {
-                Trace.WriteLine("Disposing Slider Timer");
-                cycleTimer.Dispose();
-                cycleTimer = new Timer(tcb, "Checking slider connection status...", timeInMS, timeInMS);
-            }
-        }
+       
 
         public void checkCycleRobotStatus(object obj)
         {
@@ -318,18 +314,7 @@ namespace TSD_Slider.Instruments
 
         }
 
-        private void timer_StartCalibrationTimer(int timeInMS)
-        {
-            TimerCallback tcb = new TimerCallback(checkCalibrationStatus);
-            if (calibrationTimer == null)
-                calibrationTimer = new Timer(tcb, "Checking Calibration Connection Status...", timeInMS, timeInMS);
-            else
-            {
-                Trace.WriteLine("Disposing Calibration Timer");
-                calibrationTimer.Dispose();
-                calibrationTimer = new Timer(tcb, "Checking Calibration Connection Status...", timeInMS, timeInMS);
-            }
-        }
+        
 
         private void checkCalibrationStatus(object state)
         {
@@ -393,13 +378,12 @@ namespace TSD_Slider.Instruments
             }
         }
 
-        private void startCalibrationTPProgram()
+        public void startCalibrationTPProgram()
         {
             try
             {
 
-                //start calibration timer
-                timer_StartCalibrationTimer(30000);
+              
 
                 //choosing the program
                 selectProgram(tpChar);
@@ -592,7 +576,7 @@ namespace TSD_Slider.Instruments
             }
         }
 
-        private void calibrateOrEndCycles()
+        public void calibrateOrEndCycles()
         {
             // if current completed cycles < full series cycles 
             if ((PcCompletedCycles < pcCyclesToDo) && (PcCompletedCycles % pcCalibrate == 0))
@@ -607,7 +591,7 @@ namespace TSD_Slider.Instruments
                 monitorRegister(robot_SLIDER_COMPLETED_registerName); //Only place to start monitoring slider_completed
 
                 //Start new timer thread
-                timer_StartCycleTimer(30000);
+                //timer_StartCycleTimer(30000);
 
                 //Run the  new program again with the updated register values
                 Task.Run(() => this.startSliderTPProgram());
@@ -717,7 +701,6 @@ namespace TSD_Slider.Instruments
                         WriteToScreen("Idle Status: " + progTask.CurProgram.Name);
                         break;
                     case (FRETaskStatusConstants.frStatusAborted):
-                        cycleTimer.Dispose();
                         WriteToScreen("Aborted " + progTask.CurProgram.Name);
 
                         //Only place to stop monitor for all tasks change
@@ -742,8 +725,6 @@ namespace TSD_Slider.Instruments
                 {
                     case (FRETaskStatusConstants.frStatusAborted):
                         //close calibration timer
-                        calibrationTimer.Dispose();
-
                         WriteToScreen("Aborted " + progTask.CurProgram.Name);
                         //check whether the program interrupted in the middle or not
                         //determine what kind of alarm do you usually get

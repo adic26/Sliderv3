@@ -23,8 +23,6 @@ namespace TSD_Slider.Sequences
         public ProductConfig prdConfig;
         public CharData charDataView;
         public DataBuilder dataCollection;
-        private IProgress<int> progressBar;
-        private IProgress<DataFrame> progressData;
 
         protected override void ExecutePreTest(CancellationToken token, StationConfig stationconfig, ProductConfig productconfig)
         {
@@ -35,7 +33,7 @@ namespace TSD_Slider.Sequences
             prdConfig = productconfig;
             ROBOT = new tsdFanuc();
 
-            //Setting up Robot Events
+            //Setting up Robot to Model Events
             ROBOT.updateCyclesInView += ROBOT_updateCyclesInView;
             ROBOT.robotConnectionStatus += myView_robotConnectStatus;
             ROBOT.ftpDownloadDataFile += myView_ftpTestButton;
@@ -46,18 +44,10 @@ namespace TSD_Slider.Sequences
             RFilesCopy(stationconfig);
             
             //Graph Raw Data -> Controller -> Graph and DataGridView
-
             dataCollection = new DataBuilder(stnConfig.i386Path, stnConfig.RInstallerPath);
-            //Instantiations (remain inside Controller)
-                //1.  DataCollection (DataBuilder stuff)
-                //2.  ProgressData
-                //3.  How to send information for charDataView and graphCharacterization
 
             //FTP Instantiation
             myFTP = new FTP(stnConfig.Fanuc_Ipaddress, stnConfig.fanucUsername, stnConfig.fanucPassword);
-            //connection necessary stuff
-            ROBOT.connect(stnConfig.Fanuc_Ipaddress);
-            //Set up Progress Bar - the first time you connect
 
             //include robot properties
             ROBOT.pcCyclesToDo = productconfig.NumOfCycles;
@@ -70,6 +60,39 @@ namespace TSD_Slider.Sequences
             ROBOT.tpChar = stationconfig.TPCharacterizationName;
             ROBOT.tpSlider = stationconfig.TPSliderCycleName;
             
+
+            //MAIN ROBOT CONNECTION
+            ROBOT.connect(stnConfig.Fanuc_Ipaddress);
+
+            //connect Robot API Events
+            ROBOT.mobjTasks.Change += new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+            ROBOT.mobjNumericRegisters.Change += new IVarsEvents_ChangeEventHandler(register_Change);
+
+            //Set up Progress Bar - the first time you connect
+            updateProgressBar(0);
+
+            
+            
+        }
+
+        private void register_Change(ref object Var)
+        {
+            try
+            {
+                FRCVar register = (FRCVar)Var;
+                FRCRegNumeric reg = (FRCRegNumeric)register.Value;
+
+                //Slider completed Register handler
+                if (reg.Comment == ROBOT.robot_SLIDER_COMPLETED_registerName)
+                    if (reg.Type == FRETypeCodeConstants.frIntegerType)
+                        ROBOT.PcCompletedCycles = reg.RegLong;
+
+            }
+            catch (Exception registerException)
+            {
+                Trace.WriteLine(registerException.Message);
+                Trace.WriteLine(registerException.StackTrace);
+            }
         }
 
         private void ROBOT_getLiftOffValue(object sender, bool e)
@@ -105,8 +128,6 @@ namespace TSD_Slider.Sequences
             }
         }
 
-
-
         private void myView_ftpTestButton(object sender, bool e)
         {
             //have access to FTP
@@ -121,6 +142,8 @@ namespace TSD_Slider.Sequences
             //Show if you are connected or not
             //simple senddata struct back to view to check whether you are connected or not
             //execute StartButtonEnDis(e);
+            //SendData<bool>(e);
+            SendData<ConnectionStatus>(new ConnectionStatus(e));
             
 
         }
@@ -132,120 +155,100 @@ namespace TSD_Slider.Sequences
             SendData<IntStruct>(updateCycles);
         }
 
-        //private void mobjTasks_Change(FREStatusTypeConstants ChangeType, FRCTask progTask)
-        //{
-        //    //Slider Change or Characterization Change
-        //    if (progTask.CurProgram.Name == tpSlider)
-        //    {
-        //        switch (progTask.Status)
-        //        {
-        //            case (FRETaskStatusConstants.frStatusIdle):
-        //                WriteToScreen("Idle Status: " + progTask.CurProgram.Name);
-        //                break;
-        //            case (FRETaskStatusConstants.frStatusAborted):
-        //                cycleTimer.Dispose();
-        //                WriteToScreen("Aborted " + progTask.CurProgram.Name);
+        private void updateProgressBar(int value)
+        {
+            SendData<IntStruct>(new IntStruct(value, "progressBar"));
+        }
 
-        //                //Only place to stop monitor for all tasks change
-        //                mobjTasks.StopMonitor();
-        //                WriteToScreen("Stopping Watch Event for Slider Completed - Changes!");
-        //                StopMonitorDataRegister(robot_SLIDER_COMPLETED_registerName); //Stopping Monitor : Telling ActiveX robot
+        private void WriteToScreen(string p)
+        {
+            Trace.WriteLine(p);
+        }
 
-        //                //Calibration routine
-        //                startCalibrationTPProgram();
-        //                break;
-        //            case (FRETaskStatusConstants.frStatusPaused):
-        //                WriteToScreen("Paused " + progTask.CurProgram.Name);
-        //                break;
-        //            default:
-        //                break;
+        private void mobjTasks_Change(FREStatusTypeConstants ChangeType, FRCTask progTask)
+        {
+            //Slider Change or Characterization Change
+            if (progTask.CurProgram.Name == ROBOT.tpSlider)
+            {
+                switch (progTask.Status)
+                {
+                    case (FRETaskStatusConstants.frStatusIdle):
+                        WriteToScreen("Idle Status: " + progTask.CurProgram.Name);
+                        break;
+                    case (FRETaskStatusConstants.frStatusAborted):
+                        //cycleTimer.Dispose();
+                        WriteToScreen("Aborted " + progTask.CurProgram.Name);
 
-        //        }
-        //    }
-        //    else if (progTask.CurProgram.Name == tpChar)
-        //    {
-        //        switch (progTask.Status)
-        //        {
-        //            case (FRETaskStatusConstants.frStatusAborted):
-        //                //close calibration timer
-        //                calibrationTimer.Dispose();
+                        //Only place to stop monitor for all tasks change
+                        ROBOT.mobjTasks.StopMonitor();
+                        WriteToScreen("Stopping Watch Event for Slider Completed - Changes!");
+                        ROBOT.StopMonitorDataRegister(ROBOT.robot_SLIDER_COMPLETED_registerName); //Stopping Monitor : Telling ActiveX robot
 
-        //                WriteToScreen("Aborted " + progTask.CurProgram.Name);
-        //                //check whether the program interrupted in the middle or not
-        //                //determine what kind of alarm do you usually get
-        //                mobjTasks.StopMonitor();
+                        //Calibration routine
+                        ROBOT.startCalibrationTPProgram();
+                        break;
+                    case (FRETaskStatusConstants.frStatusPaused):
+                        WriteToScreen("Paused " + progTask.CurProgram.Name);
+                        break;
+                    default:
+                        break;
 
-        //                //FTP module - Robot to controller. Empty string for future use
-        //                ftpDownloadDataFile(this, true);
+                }
+            }
+            else if (progTask.CurProgram.Name == ROBOT.tpChar)
+            {
+                switch (progTask.Status)
+                {
+                    case (FRETaskStatusConstants.frStatusAborted):
+                        //close calibration timer
+                        //calibrationTimer.Dispose();
 
-        //                //TODO 2.  Evaluate Lift off
-        //                //execute lift off method
-        //                if (OkToEvaluateLiftOff)
-        //                {
-        //                    //Adds the dataset onto datagridview and on graph
-        //                    getCalibrationData(this, OkToEvaluateLiftOff);
-        //                    Trace.WriteLine("Data Extraction Process Completed");
-        //                    //Register LIft off update
-        //                    getLiftOffValue(this, true);
-        //                    Trace.WriteLine("Lift Off Module Completed");
-        //                }
-        //                calibrateOrEndCycles();
-        //                break;
-        //            case (FRETaskStatusConstants.frStatusRun):
-        //                int currentLine = progTask.CurLine;
-        //                int result = ((int)(((float)currentLine / (float)tpChar_lines) * 100));
-        //                progressBar.Report(result);
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //    }
-        //}
+                        WriteToScreen("Aborted " + progTask.CurProgram.Name);
+                        //check whether the program interrupted in the middle or not
+                        //determine what kind of alarm do you usually get
+                        ROBOT.mobjTasks.StopMonitor();
+
+                        //FTP module - Robot to controller. Empty string for future use
+                        //ROBOT.ftpDownloadDataFile(this, true);
+                        myView_ftpTestButton(this, true);
+
+                        //TODO 2.  Evaluate Lift off
+                        //execute lift off method
+                        if (ROBOT.OkToEvaluateLiftOff)
+                        {
+                            //Adds the dataset onto datagridview and on graph
+                            //ROBOT.getCalibrationData(this, OkToEvaluateLiftOff);
+                            getCalibrationRawData(this, ROBOT.OkToEvaluateLiftOff);
+                            Trace.WriteLine("Data Extraction Process Completed");
+
+                            //Register LIft off update
+                            //ROBOT.getLiftOffValue(this, true);
+                            ROBOT_getLiftOffValue(this, true);
+                            Trace.WriteLine("Lift Off Module Completed");
+                        }
+                        ROBOT.calibrateOrEndCycles();
+                        break;
+                    case (FRETaskStatusConstants.frStatusRun):
+                        int currentLine = progTask.CurLine;
+                        int result = ((int)(((float)currentLine / (float)ROBOT.tpChar_lines) * 100));
+                        //progressBar.Report(result);
+                        updateProgressBar(result);
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
 
 
         protected override void ExecuteTest(CancellationToken token, StationConfig stationConfig, ProductConfig productConfig, TestConfig testConfig)
         {
-            //Use the System.Diagnostics.Debugger.Break() method to insert breakpoints.
-            //System.Diagnostics.Debugger.Break();
-
-            //ExamplePowerSupply ps = ExamplePowerSupply.Connect("addr");
-
-            //for (int i = 0; i < testConfig.LoopIterations; i++)
-            //{
-            //    foreach (double voltageSetting in testConfig.VoltageSettings)
-            //    {
-            //        token.ThrowIfCancellationRequested();
-            //        ps.SetVoltage(voltageSetting);
-            //        Thread.Sleep(productConfig.SettlingTime);
-
-            //        MeasurementParameter[] measurementParameters =
-            //        {
-            //            new MeasurementParameter("Loop Iteration", i),
-            //            new MeasurementParameter("Voltage", voltageSetting),
-            //            new MeasurementParameter("Temperature", 22.5)
-            //        };
-            //        Measurement<double> measurement = new Measurement<double>("Current", ps.GetCurrent(), "Amps", 0.1, 0.8, parameters: measurementParameters);
-            //        AddMeasurement(measurement);
-            //    }
-            //}
-
-            //Initialize all the event handlers
-            //controller - do not have access , but do not need it
-            
-            //view - do not have access
-            
-            //robot - have access
+           
             Trace.WriteLine("Please press Start to start testing");
 
-            //Sequence
-            //1.  Connect - pretest
-
-            //2. StartButton
+            //StartButton
             ROBOT.startSliderTest();
-
-            //While Testing
-            //Task Change
-            //Register Change
 
             //Calibrate Seperately
             //Cycle Sepreately
