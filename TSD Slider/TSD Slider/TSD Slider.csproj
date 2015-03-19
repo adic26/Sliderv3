@@ -35,11 +35,11 @@
   <ItemGroup>
     <Reference Include="DBControl, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DBControl.4.5.221\lib\net45\DBControl.dll</HintPath>
+      <HintPath>..\packages\DBControl.4.5.228\lib\net45\DBControl.dll</HintPath>
     </Reference>
     <Reference Include="DBControl.XmlSerializers, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DBControl.4.5.221\lib\net45\DBControl.XmlSerializers.dll</HintPath>
+      <HintPath>..\packages\DBControl.4.5.228\lib\net45\DBControl.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="DynamicInterop">
       <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
