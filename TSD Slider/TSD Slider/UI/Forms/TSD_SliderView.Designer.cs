@@ -28,8 +28,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             this.MeasurementName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.MeasuredValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Units = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -37,6 +37,7 @@
             this.UpperLimit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Result = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
+            this.testCasesMenuItem = new TsdLib.UI.Controls.TestCasesMenuItem(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbSliderCycle = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -79,7 +80,6 @@
             this.testSequenceControl = new TsdLib.UI.Controls.TestSequenceControl();
             this.testInfoDataGridViewControl = new TsdLib.UI.Controls.TestInfoDataGridViewControl();
             this.measurementDataGridViewControl = new TsdLib.UI.Controls.MeasurementDataGridViewControl();
-            this.testCasesMenuItem = new TsdLib.UI.Controls.TestCasesMenuItem(this.components);
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbSliderCycle.SuspendLayout();
@@ -145,9 +145,15 @@
             this.testCasesMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1756, 24);
+            this.menuStrip.Size = new System.Drawing.Size(1548, 24);
             this.menuStrip.TabIndex = 8;
             this.menuStrip.Text = "menuStrip";
+            // 
+            // testCasesMenuItem
+            // 
+            this.testCasesMenuItem.Name = "testCasesMenuItem";
+            this.testCasesMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.testCasesMenuItem.Text = "&Test Cases";
             // 
             // tabControl1
             // 
@@ -155,7 +161,7 @@
             this.tabControl1.Controls.Add(this.tbData);
             this.tabControl1.Controls.Add(this.tbEngScreen);
             this.tabControl1.Controls.Add(this.tbGraphs);
-            this.tabControl1.Location = new System.Drawing.Point(1190, 38);
+            this.tabControl1.Location = new System.Drawing.Point(984, 38);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(558, 792);
@@ -463,10 +469,10 @@
             // 
             // ResultsChart
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ResultsChart.ChartAreas.Add(chartArea3);
-            legend3.Name = "Legend1";
-            this.ResultsChart.Legends.Add(legend3);
+            chartArea2.Name = "ChartArea1";
+            this.ResultsChart.ChartAreas.Add(chartArea2);
+            legend2.Name = "Legend1";
+            this.ResultsChart.Legends.Add(legend2);
             this.ResultsChart.Location = new System.Drawing.Point(31, 76);
             this.ResultsChart.Name = "ResultsChart";
             this.ResultsChart.Size = new System.Drawing.Size(475, 413);
@@ -477,7 +483,7 @@
             // 
             this.progCalibration.Location = new System.Drawing.Point(93, 280);
             this.progCalibration.Name = "progCalibration";
-            this.progCalibration.Size = new System.Drawing.Size(1072, 23);
+            this.progCalibration.Size = new System.Drawing.Size(885, 23);
             this.progCalibration.TabIndex = 25;
             // 
             // label13
@@ -494,9 +500,9 @@
             this.traceListenerTextBoxControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.traceListenerTextBoxControl.Location = new System.Drawing.Point(16, 605);
+            this.traceListenerTextBoxControl.Location = new System.Drawing.Point(16, 597);
             this.traceListenerTextBoxControl.Name = "traceListenerTextBoxControl";
-            this.traceListenerTextBoxControl.Size = new System.Drawing.Size(1172, 225);
+            this.traceListenerTextBoxControl.Size = new System.Drawing.Size(962, 233);
             this.traceListenerTextBoxControl.TabIndex = 5;
             // 
             // multiConfigControl
@@ -528,29 +534,23 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.testInfoDataGridViewControl.Location = new System.Drawing.Point(679, 38);
             this.testInfoDataGridViewControl.Name = "testInfoDataGridViewControl";
-            this.testInfoDataGridViewControl.Size = new System.Drawing.Size(505, 222);
+            this.testInfoDataGridViewControl.Size = new System.Drawing.Size(299, 222);
             this.testInfoDataGridViewControl.TabIndex = 2;
             // 
             // measurementDataGridViewControl
             // 
             this.measurementDataGridViewControl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.measurementDataGridViewControl.DisplayLimitsAndResult = true;
-            this.measurementDataGridViewControl.Location = new System.Drawing.Point(12, 309);
+            this.measurementDataGridViewControl.Location = new System.Drawing.Point(-196, 309);
             this.measurementDataGridViewControl.Name = "measurementDataGridViewControl";
-            this.measurementDataGridViewControl.Size = new System.Drawing.Size(1172, 282);
+            this.measurementDataGridViewControl.Size = new System.Drawing.Size(1174, 282);
             this.measurementDataGridViewControl.TabIndex = 1;
-            // 
-            // testCasesMenuItem
-            // 
-            this.testCasesMenuItem.Name = "testCasesMenuItem";
-            this.testCasesMenuItem.Size = new System.Drawing.Size(74, 20);
-            this.testCasesMenuItem.Text = "&Test Cases";
             // 
             // TSD_SliderView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1756, 842);
+            this.ClientSize = new System.Drawing.Size(1548, 842);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.progCalibration);
             this.Controls.Add(this.tabControl1);
