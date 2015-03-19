@@ -11,6 +11,7 @@ using RDotNet;
 using TSD_Slider.Instruments;
 using TSD_Slider.UI.Components;
 using TSD_Slider.Configuration;
+using TSD_Slider.Communication;
 using System.Threading.Tasks;
 
 namespace TSD_Slider.UI.Forms
@@ -368,13 +369,23 @@ namespace TSD_Slider.UI.Forms
             //some logic to add the double to your UI
         }
 
+        private void addData(dataFrameContainer x)
+        {
+            //this is the dataframe object
+            //execute my report
+            DataGridLiftOffData.updateData(x.xFrame);
+            graphCharacterization(DataGridLiftOffData.GetValues(stationConfig.scriptDisplacementName), DataGridLiftOffData.GetValues(stationConfig.scriptForceName));
+
+        }
+
         /// <summary>
         /// Update Cycles In View Coming From Robot/Sequence
         /// </summary>
         /// <param name="updateCycles">Update Cycles Method</param>
-        private void addData(int updateCycles)
+        private void addData(IntStruct data)
         {
-            updateTextBox(updateCycles);
+            if (data.context == "UpdateCycles") 
+                updateTextBox(data.data);
         }
 
         private void ViewBase_FormClosing(object sender, FormClosingEventArgs e)

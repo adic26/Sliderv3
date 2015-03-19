@@ -1,22 +1,38 @@
 ﻿using System;
 using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using TSD_Slider.Configuration;
 using TsdLib.Measurements;
 using TsdLib.TestSystem.TestSequence;
 using System.Diagnostics;
 using TSD_Slider.Instruments;
+using TSD_Slider.UI.Components;
 using FRRobot;
 using RDotNet;
+using TSD_Slider.Communication;
 
 namespace TSD_Slider.Sequences
 {
     public class RobotSequence : SequentialTestSequence<StationConfig, ProductConfig, TestConfig>
     {
         public tsdFanuc ROBOT;
-        protected override void ExecutePreTest(CancellationToken token, StationConfig stationConfig, ProductConfig productConfig)
+        public IntStruct updateCycles;
+        public FTP myFTP;
+        public StationConfig stnConfig;
+        public ProductConfig prdConfig;
+        public CharData charDataView;
+        public DataBuilder dataCollection;
+        private IProgress<int> progressBar;
+        private IProgress<DataFrame> progressData;
+
+        protected override void ExecutePreTest(CancellationToken token, StationConfig stationconfig, ProductConfig productconfig)
         {
             //connection
-            base.ExecutePreTest(token, stationConfig, productConfig);
+            base.ExecutePreTest(token, stationconfig, productconfig);
+
+            stnConfig = stationconfig;
+            prdConfig = productconfig;
             ROBOT = new tsdFanuc();
 
             //Setting up Robot Events
@@ -27,45 +43,93 @@ namespace TSD_Slider.Sequences
             ROBOT.getLiftOffValue += ROBOT_getLiftOffValue;
 
             //Connect Start Here
-            RFilesCopy(stationConfig);
+            RFilesCopy(stationconfig);
             
             //Graph Raw Data -> Controller -> Graph and DataGridView
+
+            dataCollection = new DataBuilder(stnConfig.i386Path, stnConfig.RInstallerPath);
             //Instantiations (remain inside Controller)
                 //1.  DataCollection (DataBuilder stuff)
                 //2.  ProgressData
                 //3.  How to send information for charDataView and graphCharacterization
 
             //FTP Instantiation
-
+            myFTP = new FTP(stnConfig.Fanuc_Ipaddress, stnConfig.fanucUsername, stnConfig.fanucPassword);
             //connection necessary stuff
-            ROBOT.connect(stationConfig.Fanuc_Ipaddress);
+            ROBOT.connect(stnConfig.Fanuc_Ipaddress);
+            //Set up Progress Bar - the first time you connect
+
             //include robot properties
+            ROBOT.pcCyclesToDo = productconfig.NumOfCycles;
+            ROBOT.pcCalibrate = productconfig.CalibrateEvery;
+            ROBOT.PcCompletedCycles = productconfig.CompletedCycles;
+            ROBOT.robot_SLIDER_CYCLES_registerName = stationconfig.RegCyclesName;
+            ROBOT.robot_SLIDER_COMPLETED_registerName = stationconfig.RegCyclesCompletedName;
+            ROBOT.robot_LIFT_registerName = stationconfig.RegLiftOffName;
+            ROBOT.pcLiftOffPoint = productconfig.liftOffPoint;
+            ROBOT.tpChar = stationconfig.TPCharacterizationName;
+            ROBOT.tpSlider = stationconfig.TPSliderCycleName;
             
         }
 
         private void ROBOT_getLiftOffValue(object sender, bool e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(charDataView.GetValues(stnConfig.scriptDisplacementName), charDataView.GetValues(stnConfig.scriptForceName));
+                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint);
+
+                //Archive the data file
+                archiveDTFiles(stnConfig);
+
+
+                //update the measurement
+                //myView.LogMeasurement(ROBOT.pcLiftOffPoint);
+                MeasurementParameter[] measurementParameteres = 
+                { 
+                    new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles)
+                };
+
+                AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
+                    "mm",
+                    18.0,
+                    28.0,
+                    parameters: measurementParameteres));
+
+
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
         }
 
-        private void getCalibrationRawData(object sender, bool e)
-        {
-            throw new NotImplementedException();
-        }
+
 
         private void myView_ftpTestButton(object sender, bool e)
         {
-            throw new NotImplementedException();
+            //have access to FTP
+            //make a method that would execute ftptestButton
+            //need access to StationConfig
+            FtpTestButton(stnConfig);
+            
         }
 
         private void myView_robotConnectStatus(object sender, bool e)
         {
-            throw new NotImplementedException();
+            //Show if you are connected or not
+            //simple senddata struct back to view to check whether you are connected or not
+            //execute StartButtonEnDis(e);
+            
+
         }
 
         private void ROBOT_updateCyclesInView(object sender, int e)
         {
-            SendData<int>(e);
+
+            updateCycles = new IntStruct(e, "UpdateCycles");
+            SendData<IntStruct>(updateCycles);
         }
 
         //private void mobjTasks_Change(FREStatusTypeConstants ChangeType, FRCTask progTask)
@@ -255,6 +319,74 @@ namespace TSD_Slider.Sequences
                 Trace.WriteLine(ex.StackTrace);
             }
         }
-    
+
+        private void getCalibrationRawData(object sender, bool e)
+        {
+            try
+            {
+                if (e)
+                {
+                    var parameters = new Dictionary<string, SymbolicExpression>();
+                    parameters.Add(stnConfig.scriptParameterName, dataCollection.directory(stnConfig.PCDataFolderPath));
+                    DataFrame charDataMatrix = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation, stnConfig.scriptFunctionName, parameters);
+                    //SendData<dataFrameContainer>(new dataFrameContainer(charDataMatrix));
+                }
+                else
+                    Trace.WriteLine("Unable to evaluate Lift off");
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+        }
+
+        private void FtpTestButton(StationConfig stationconfig)
+        {
+            if (myFTP != null)
+            {
+                //produces Robot listed directory
+                Trace.WriteLine("Getting my list under : " + stationconfig.ForceFilePath);
+                List<string> temp = myFTP.GetFileList(stationconfig.ForceFilePath);
+
+                if (temp == null)
+                {
+                    Trace.WriteLine(
+                        "Could Not Connect to Host Using " +
+                        stationconfig.fanucUsername +
+                        " Username" + stationconfig.fanucUsername +
+                        " And " + stationconfig.fanucPassword +
+                        " :" + stationconfig.ForceFilePath);
+
+                    Trace.WriteLine(
+                        "IF its NULL, it means: It couldn't connect anonymously " +
+                        "Or Could not connect using Force File Path Setting : " +
+                        stationconfig.ForceFilePath);
+
+                    if (ROBOT != null)
+                        ROBOT.OkToEvaluateLiftOff = false;
+                }
+                else
+                {
+                    //finding out the maximum file by sorting and downloading this specific file
+                    //var sortedOrder = temp.OrderByDescending<string, int>(s => int.Parse(s.Replace("fsdt", "")));
+                    //string fileName = sortedOrder.ElementAt(1);
+                    int MaxIndex = temp.IndexOf(temp.Max<string>());
+                    string fileName = temp.ElementAt(MaxIndex - 1);
+                    Trace.WriteLine("Most Updated DT File is : " + fileName);
+                    if (fileName.Contains("9999"))
+                        Trace.WriteLine("Reached MAXIMUM FILE. " +
+                            "Please not the lift off values will not be determined anymore" +
+                            ".  Please delete from the folder " + stationconfig.ForceFilePath);
+
+                    //Download this file
+                    myFTP.Download(stationconfig.ForceFilePath, fileName, stationconfig.PCDataFolderPath);
+                    Trace.WriteLine(fileName + " downloaded in local drive : " + stationconfig.PCDataFolderPath);
+                    if (ROBOT != null)
+                        ROBOT.OkToEvaluateLiftOff = true;
+                }
+            }
+
+        }
     }
 }

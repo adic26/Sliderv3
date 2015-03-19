@@ -39,19 +39,19 @@ namespace TSD_Slider
             //View Events
             myView = this.UI;
             
-            myView.startButton += new System.EventHandler(myView_startButton);
-            myView.stopButton += new System.EventHandler(myView_stopButton);
-            myView.connectButton += new EventHandler(myView_connectButton);
+            //myView.startButton += new System.EventHandler(myView_startButton);
+            //myView.stopButton += new System.EventHandler(myView_stopButton);
+            //myView.connectButton += new EventHandler(myView_connectButton);
             myView.dataTestButton += getCalibrationRawData;
             myView.TESTLift += ROBOT_getLiftOffValue;
 
             //Robot Events
-            ROBOT = new tsdFanuc();
-            ROBOT.updateCyclesInView += ROBOT_updateCyclesInView;
-            ROBOT.robotConnectionStatus += myView_robotConnectStatus;
-            ROBOT.ftpDownloadDataFile += myView_ftpTestButton;
-            ROBOT.getCalibrationData += getCalibrationRawData;
-            ROBOT.getLiftOffValue += ROBOT_getLiftOffValue;
+            //ROBOT = new tsdFanuc();
+            //ROBOT.updateCyclesInView += ROBOT_updateCyclesInView;
+            //ROBOT.robotConnectionStatus += myView_robotConnectStatus;
+            //ROBOT.ftpDownloadDataFile += myView_ftpTestButton;
+            //ROBOT.getCalibrationData += getCalibrationRawData;
+            //ROBOT.getLiftOffValue += ROBOT_getLiftOffValue;
         }
 
         void myView_connectButton(object sender, System.EventArgs e)
@@ -67,23 +67,6 @@ namespace TSD_Slider
                         productconfig = myView.productConfig;
                         instantiations();
                     }
-
-                    //FTP connection
-                    myFTP = new FTP(stationconfig.Fanuc_Ipaddress, stationconfig.fanucUsername, stationconfig.fanucPassword);
-
-                    //Robot Connection
-                    ROBOT.connect(stationconfig.Fanuc_Ipaddress);
-                    ROBOT.pcCyclesToDo = productconfig.NumOfCycles;
-                    ROBOT.pcCalibrate = productconfig.CalibrateEvery;
-                    ROBOT.PcCompletedCycles = productconfig.CompletedCycles;
-                    ROBOT.robot_SLIDER_CYCLES_registerName = stationconfig.RegCyclesName;
-                    ROBOT.robot_SLIDER_COMPLETED_registerName = stationconfig.RegCyclesCompletedName;
-                    ROBOT.robot_LIFT_registerName = stationconfig.RegLiftOffName;
-                    ROBOT.pcLiftOffPoint = productconfig.liftOffPoint;
-                    ROBOT.tpChar = stationconfig.TPCharacterizationName;
-                    ROBOT.tpSlider = stationconfig.TPSliderCycleName;
-
-
                 }
             }
             catch (Exception ex)
@@ -99,7 +82,7 @@ namespace TSD_Slider
             //Lift Off Instantiation and events
             dataCollection = new DataBuilder(stationconfig.i386Path, stationconfig.RInstallerPath);
 
-            //Dataview connection
+            //Datagridview connection
             charDataView = myView.DataGridLiftOffData; //connecting datagridview with controllers instance
 
             if (progressData == null)
@@ -134,15 +117,6 @@ namespace TSD_Slider
             {
                 if (e)
                 {
-                    //collection of matrix
-                    if (stationconfig == null)
-                    {
-                        //Local configurations
-                        stationconfig = myView.stationConfig;
-                        productconfig = myView.productConfig;
-                        //instantiations();
-                    }
-
                     var parameters = new Dictionary<string, SymbolicExpression>();
                     parameters.Add(stationconfig.scriptParameterName, dataCollection.directory(stationconfig.PCDataFolderPath));
                     DataFrame charDataMatrix = dataCollection.GetLiftOffRawData(stationconfig.scriptLocation, stationconfig.scriptFunctionName, parameters);

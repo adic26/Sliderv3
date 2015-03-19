@@ -94,7 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\DataBuilder.cs" />
+    <Compile Include="Communication\dataFrameContainer.cs" />
     <Compile Include="Communication\FTP.cs" />
+    <Compile Include="Communication\IntStruct.cs" />
     <Compile Include="Exceptions\DataFrameNotFoundException.cs" />
     <Compile Include="Exceptions\LiftoffEvalException.cs" />
     <Compile Include="Exceptions\TPProgramNotFoundException.cs" />

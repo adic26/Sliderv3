@@ -91,7 +91,10 @@ namespace TSD_Slider.Communication
 
                 //See if its Numeric Matrix or Data Frame?
                 if (dataset.IsDataFrame())
-                    progressData.Report(dataset);
+                {
+                    //do nothing
+                    //you are sending this data back in sequence anyway
+                }
                 else
                     throw new DataFrameNotFoundException();
 
