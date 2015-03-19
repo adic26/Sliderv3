@@ -22,7 +22,7 @@ namespace TSD_Slider.Instruments
         public FRCRegNumeric reg;
         public FRCVars mobjNumericRegisters;
         public FRCTPProgram objProgram;
-        private FRCTasks mobjTasks;
+        public FRCTasks mobjTasks;
         private FRCPrograms allMyProg;
         private FRCSysPositions allSysRegisters;
         public enum IncrementDirection { DOWN, UP };

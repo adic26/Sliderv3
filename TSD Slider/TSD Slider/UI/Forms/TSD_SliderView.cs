@@ -363,6 +363,20 @@ namespace TSD_Slider.UI.Forms
             Trace.WriteLine(string.Format("String representation: {0}", data));
         }
 
+        private void addData(double data)
+        {
+            //some logic to add the double to your UI
+        }
+
+        /// <summary>
+        /// Update Cycles In View Coming From Robot/Sequence
+        /// </summary>
+        /// <param name="updateCycles">Update Cycles Method</param>
+        private void addData(int updateCycles)
+        {
+            updateTextBox(updateCycles);
+        }
+
         private void ViewBase_FormClosing(object sender, FormClosingEventArgs e)
         {
             EventHandler<CancelEventArgs> invoker = UIClosing;
