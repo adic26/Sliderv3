@@ -11,12 +11,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Developer", "Developer", "{
 		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\TestConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Developer\TestConfig.xml
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ROBOT2 Configuration", "ROBOT2 Configuration", "{D1641D3A-169B-4D0C-98B5-4191455117F3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Production", "Production", "{638BCC6E-66CF-4D0D-B7B9-A39059CB9013}"
 	ProjectSection(SolutionItems) = preProject
-		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\ProductConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\ProductConfig.xml
-		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\StationConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\StationConfig.xml
-		\\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\TestConfig.xml = \\fsg16ykf\personal\achugh\Fanuc & Slider\ROBOT2\1.1\Debug\TestConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\ProductConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\ProductConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\SequenceConfigCommon.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\SequenceConfigCommon.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\StationConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\StationConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\TestConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Production\TestConfig.xml
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Engineering", "Engineering", "{01474939-D82F-42B8-967C-4D70CB585FF7}"
+	ProjectSection(SolutionItems) = preProject
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\ProductConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\ProductConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\SequenceConfigCommon.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\SequenceConfigCommon.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\StationConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\StationConfig.xml
+		C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\TestConfig.xml = C:\ProgramData\TsdLib\Configuration\Slider_Test\1.0\Engineering\TestConfig.xml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestingSlider", "TestingSlider\TestingSlider.csproj", "{2E983852-4F06-430E-ACB0-0B7229B63EBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +39,10 @@ Global
 		{A83C4594-D41A-40C9-8EFB-CB112302A1DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A83C4594-D41A-40C9-8EFB-CB112302A1DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A83C4594-D41A-40C9-8EFB-CB112302A1DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E983852-4F06-430E-ACB0-0B7229B63EBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E983852-4F06-430E-ACB0-0B7229B63EBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E983852-4F06-430E-ACB0-0B7229B63EBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E983852-4F06-430E-ACB0-0B7229B63EBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

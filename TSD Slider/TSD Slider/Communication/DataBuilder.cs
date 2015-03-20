@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using sliderv2.Exceptions;
 using RDotNet;
+using TSD_Slider.Instruments;
 
 namespace TSD_Slider.Communication
 {
@@ -19,10 +20,14 @@ namespace TSD_Slider.Communication
     {
         private IProgress<DataFrame> progressData;
 
-        REngine rengine;
+        public REngine rengine;
         private double liftOff;
         private string r386Path;
         private string rPath;
+        public dataFrame characterizationData;
+        public List<double> displacement;
+        public List<double> force;
+        public List<int> cycles;
 
         public void setupProgress(IProgress<DataFrame> _prog)
         {
@@ -42,7 +47,7 @@ namespace TSD_Slider.Communication
             r386Path = i386path;
             rPath = rpath;
             
-            REngine.SetEnvironmentVariables(r386Path,rpath);
+            REngine.SetEnvironmentVariables(r386Path,rPath);
             rengine = REngine.GetInstance();
         }
 
@@ -50,6 +55,11 @@ namespace TSD_Slider.Communication
         {
             try
             {
+                if (rengine == null)
+                {
+                    REngine.SetEnvironmentVariables(r386Path, rPath);
+                    rengine = REngine.GetInstance();
+                }
                 //setup library
                 rengine.Evaluate("require('ggplot2')");
                 rengine.Evaluate("library('ggplot2')");
@@ -77,26 +87,25 @@ namespace TSD_Slider.Communication
                         Trace.WriteLine("not an R file -- " + s);
                 }
                 //slider function setup
-                var sliderfunc = rengine.Evaluate(functionName).AsFunction();
+                Function sliderfunc = rengine.Evaluate(functionName).AsFunction();
 
                 Trace.WriteLine("Function Name Evaluated! : " + functionName);
 
                 //Assuming function parameters are pre-setup
-                var dataset = sliderfunc.Invoke(parameterNames).AsDataFrame();
+                DataFrame dataset = sliderfunc.Invoke(parameterNames).AsDataFrame();
+                
+                //dataFrame did not work, we must try to do this as characterMatrix
+                if (dataset == null)
+                {
+                    Trace.WriteLine("dataset is null");
+                    throw new DataFrameNotFoundException();
+                }
+
                 Trace.WriteLine("Parameter Name Invoked using " 
                     + functionName 
                     + ".Invoke(" 
                     + parameterNames.First().Key 
                     + ")");
-
-                //See if its Numeric Matrix or Data Frame?
-                if (dataset.IsDataFrame())
-                {
-                    //do nothing
-                    //you are sending this data back in sequence anyway
-                }
-                else
-                    throw new DataFrameNotFoundException();
 
                 //send data frame to different method to find out the maximum value
                 return dataset;
@@ -112,6 +121,46 @@ namespace TSD_Slider.Communication
         public CharacterVector directory(string stDirectory)
         {
             return rengine.CreateCharacterVector(new[] { stDirectory });
+        }
+
+        public double EvaluateLiftOffPoint(DataFrame myTable, string config_Displacement, string config_Force)
+        {
+            try
+            {
+                if (displacement == null && force == null)
+                {
+                    displacement = new List<double>();
+                    force = new List<double>();
+                    cycles = new List<int>();
+                }
+                else
+                {
+                    displacement.Clear();
+                    force.Clear();
+                    cycles.Clear();
+                }
+
+                for (int i = 0; i < myTable.RowCount; i++)
+                {
+                    displacement.Add(Convert.ToDouble(myTable[i, config_Displacement]));
+                    force.Add(Convert.ToDouble(myTable[i, config_Force]));
+                    cycles.Add(Convert.ToInt32(myTable[i, 0]));
+                }
+
+                
+                 return EvaluateLiftOffPoint(displacement, force); 
+            }
+            catch (LiftoffEvalException ex)
+            {
+                Trace.WriteLine(ex.Message);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex.Message);
+                throw;
+            }
+
         }
 
         public double EvaluateLiftOffPoint(List<double> displacement, List<double> force)
@@ -131,9 +180,6 @@ namespace TSD_Slider.Communication
                 int indexValue = force.IndexOf(windowForce.Max());
 
                 double resultant = Math.Abs(displacement[indexValue]) - 5.0;
-
-                if (resultant < 18.0)
-                    throw new Exception("Lift Off Force - unable to calculate");
 
                 return resultant;
             }

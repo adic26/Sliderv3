@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
 using TSD_Slider.Configuration;
 using TsdLib.Measurements;
@@ -11,6 +12,7 @@ using TSD_Slider.UI.Components;
 using FRRobot;
 using RDotNet;
 using TSD_Slider.Communication;
+using sliderv2.Exceptions;
 
 namespace TSD_Slider.Sequences
 {
@@ -23,6 +25,8 @@ namespace TSD_Slider.Sequences
         public ProductConfig prdConfig;
         public CharData charDataView;
         public DataBuilder dataCollection;
+        public DataFrame characterizationData;
+        public dataFrame VeniceLiftOff;
 
         protected override void ExecutePreTest(CancellationToken token, StationConfig stationconfig, ProductConfig productconfig)
         {
@@ -40,11 +44,8 @@ namespace TSD_Slider.Sequences
             ROBOT.getCalibrationData += getCalibrationRawData;
             ROBOT.getLiftOffValue += ROBOT_getLiftOffValue;
 
-            //Connect Start Here
+            ////Connect Start Here
             RFilesCopy(stationconfig);
-            
-            //Graph Raw Data -> Controller -> Graph and DataGridView
-            dataCollection = new DataBuilder(stnConfig.i386Path, stnConfig.RInstallerPath);
 
             //FTP Instantiation
             myFTP = new FTP(stnConfig.Fanuc_Ipaddress, stnConfig.fanucUsername, stnConfig.fanucPassword);
@@ -59,7 +60,10 @@ namespace TSD_Slider.Sequences
             ROBOT.pcLiftOffPoint = productconfig.liftOffPoint;
             ROBOT.tpChar = stationconfig.TPCharacterizationName;
             ROBOT.tpSlider = stationconfig.TPSliderCycleName;
-            
+
+            //DataCollector
+            dataCollection = new DataBuilder(stnConfig.i386Path, stnConfig.RInstallerPath);
+
 
             //MAIN ROBOT CONNECTION
             ROBOT.connect(stnConfig.Fanuc_Ipaddress);
@@ -97,34 +101,35 @@ namespace TSD_Slider.Sequences
 
         private void ROBOT_getLiftOffValue(object sender, bool e)
         {
+            computeLiftOff(e);
+        }
+
+        private void computeLiftOff(bool e)
+        {
             try
             {
-                ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(charDataView.GetValues(stnConfig.scriptDisplacementName), charDataView.GetValues(stnConfig.scriptForceName));
-                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint);
 
-                //Archive the data file
-                archiveDTFiles(stnConfig);
+                Trace.WriteLine("Computer Lift Off started");
 
+                ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(
+                    characterizationData,
+                    stnConfig.scriptDisplacementName,
+                    stnConfig.scriptForceName);
 
-                //update the measurement
-                //myView.LogMeasurement(ROBOT.pcLiftOffPoint);
-                MeasurementParameter[] measurementParameteres = 
-                { 
-                    new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles)
-                };
-
-                AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
-                    "mm",
-                    18.0,
-                    28.0,
-                    parameters: measurementParameteres));
+                if ((ROBOT.pcLiftOffPoint < 10) || (ROBOT.pcLiftOffPoint > 30.0))
+                {
+                    throw new LiftoffEvalException("Lift Off Force, less than 10.0mm");
+                }
 
 
+
+                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint); 
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
                 Trace.WriteLine(ex.StackTrace);
+                throw;
             }
         }
 
@@ -143,8 +148,7 @@ namespace TSD_Slider.Sequences
             //simple senddata struct back to view to check whether you are connected or not
             //execute StartButtonEnDis(e);
             //SendData<bool>(e);
-            SendData<ConnectionStatus>(new ConnectionStatus(e));
-            
+            SendDataByValue<ConnectionStatus>(new ConnectionStatus(e));
 
         }
 
@@ -152,12 +156,12 @@ namespace TSD_Slider.Sequences
         {
 
             updateCycles = new IntStruct(e, "UpdateCycles");
-            SendData<IntStruct>(updateCycles);
+            SendDataByValue<IntStruct>(updateCycles);
         }
 
         private void updateProgressBar(int value)
         {
-            SendData<IntStruct>(new IntStruct(value, "progressBar"));
+            SendDataByValue<IntStruct>(new IntStruct(value, "progressBar"));
         }
 
         private void WriteToScreen(string p)
@@ -210,7 +214,7 @@ namespace TSD_Slider.Sequences
 
                         //FTP module - Robot to controller. Empty string for future use
                         //ROBOT.ftpDownloadDataFile(this, true);
-                        myView_ftpTestButton(this, true);
+                        FtpTestButton(stnConfig);
 
                         //TODO 2.  Evaluate Lift off
                         //execute lift off method
@@ -218,13 +222,9 @@ namespace TSD_Slider.Sequences
                         {
                             //Adds the dataset onto datagridview and on graph
                             //ROBOT.getCalibrationData(this, OkToEvaluateLiftOff);
-                            getCalibrationRawData(this, ROBOT.OkToEvaluateLiftOff);
-                            Trace.WriteLine("Data Extraction Process Completed");
-
-                            //Register LIft off update
-                            //ROBOT.getLiftOffValue(this, true);
-                            ROBOT_getLiftOffValue(this, true);
-                            Trace.WriteLine("Lift Off Module Completed");
+                            //getCalibrationRawData(this, ROBOT.OkToEvaluateLiftOff);
+                            getCalibrationData(true);
+                            Trace.WriteLine("Data Extraction/LiftOff Process Completed");
                         }
                         ROBOT.calibrateOrEndCycles();
                         break;
@@ -243,16 +243,18 @@ namespace TSD_Slider.Sequences
 
 
         protected override void ExecuteTest(CancellationToken token, StationConfig stationConfig, ProductConfig productConfig, TestConfig testConfig)
-        {
-           
-            Trace.WriteLine("Please press Start to start testing");
-
+        {            
             //StartButton
             ROBOT.startSliderTest();
+            ROBOT.WaitForFinish.WaitOne(); //Waiting for robot to finish all cycles
 
-            //Calibrate Seperately
-            //Cycle Sepreately
+            //getCalibrationData(true);
+            //Thread.Sleep(10000);
+            //computeLiftOff(true);
 
+            //Execute test by passing via reference
+            //getCalibrationData(true);
+            //Thread.Sleep(10000);
 
 
         }
@@ -299,7 +301,7 @@ namespace TSD_Slider.Sequences
 
         }
 
-        public void archiveDTFiles(StationConfig stationConfig)
+        public string[] archiveDTFiles(StationConfig stationConfig)
         {
             try
             {
@@ -314,25 +316,80 @@ namespace TSD_Slider.Sequences
                         System.IO.Path.GetFileName(s) +
                         " Archived in " +
                         System.IO.Path.Combine(System.Environment.CurrentDirectory, "archive"));
+
                 }
+
+                return files;
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
                 Trace.WriteLine(ex.StackTrace);
+                throw;
             }
         }
 
         private void getCalibrationRawData(object sender, bool e)
         {
+            getCalibrationData(e);
+        }
+
+        private void getCalibrationData(bool e)
+        {
             try
             {
                 if (e)
                 {
+                    //setting up parameters
                     var parameters = new Dictionary<string, SymbolicExpression>();
-                    parameters.Add(stnConfig.scriptParameterName, dataCollection.directory(stnConfig.PCDataFolderPath));
-                    DataFrame charDataMatrix = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation, stnConfig.scriptFunctionName, parameters);
-                    //SendData<dataFrameContainer>(new dataFrameContainer(charDataMatrix));
+                    parameters.Add(stnConfig.scriptParameterName, 
+                        dataCollection.directory(stnConfig.PCDataFolderPath));
+
+                    //Raw Data
+                    characterizationData = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation, 
+                        stnConfig.scriptFunctionName, 
+                        parameters);
+                    Trace.WriteLine("Evaluation Lift Off Raw Data completed");
+
+                    if (characterizationData != null)
+                    {
+                       
+
+                        computeLiftOff(true); // no archiving
+                        Trace.WriteLine("Lift Off Module Completed");
+
+                        //get my stuct file
+                        VeniceLiftOff = new dataFrame(
+                            dataCollection.cycles.ToArray(),
+                            dataCollection.displacement.ToArray(),
+                            dataCollection.force.ToArray());
+
+                        //clean Characterization Data
+                        characterizationData = null;
+ 
+                        Trace.WriteLine("Sending Information to UI");
+                        //Log Measurement
+                        //Get the current data file to log
+                        string[] files = System.IO.Directory.GetFiles(stnConfig.PCDataFolderPath);
+
+                        //update the measurement
+                        MeasurementParameter[] measurementParameteres = 
+                        { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
+
+                        AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
+                            "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
+
+                        //Archive Data Here : Omit for testing only
+                        //archiveDTFiles(stnConfig);
+
+                        //TODO: Send struct back to UI
+                        SendData(VeniceLiftOff);
+                    }
+                    else
+                    {
+                        throw new Exception("unable to find dataframe");
+                    }
+
                 }
                 else
                     Trace.WriteLine("Unable to evaluate Lift off");
@@ -372,24 +429,40 @@ namespace TSD_Slider.Sequences
                 else
                 {
                     //finding out the maximum file by sorting and downloading this specific file
-                    //var sortedOrder = temp.OrderByDescending<string, int>(s => int.Parse(s.Replace("fsdt", "")));
+                    //var sortedOrder = temp.OrderByDescending&lt;string, int&gt;(s =&gt; int.Parse(s.Replace("fsdt", "")));
                     //string fileName = sortedOrder.ElementAt(1);
-                    int MaxIndex = temp.IndexOf(temp.Max<string>());
-                    string fileName = temp.ElementAt(MaxIndex - 1);
-                    Trace.WriteLine("Most Updated DT File is : " + fileName);
-                    if (fileName.Contains("9999"))
-                        Trace.WriteLine("Reached MAXIMUM FILE. " +
-                            "Please not the lift off values will not be determined anymore" +
-                            ".  Please delete from the folder " + stationconfig.ForceFilePath);
+                    int MaxIndex;
+                    Trace.WriteLine("Finding Max Index of File List");
+                   try
+                   {
+                       MaxIndex = temp.IndexOf(temp.Max<string>());
+                       Trace.WriteLine("Finding MaxIndex " + MaxIndex.ToString());
+                       string fileName = temp.ElementAt(MaxIndex - 1);
+                       Trace.WriteLine("Most Updated DT File is : " + fileName);
+                       if (fileName.Contains("9999"))
+                           Trace.WriteLine("Reached MAXIMUM FILE. " +
+                               "Please not the lift off values will not be determined anymore" +
+                               ".  Please delete from the folder " + stationconfig.ForceFilePath);
+                        //Download this file
+                        myFTP.Download(stationconfig.ForceFilePath, fileName, stationconfig.PCDataFolderPath);
+                        Trace.WriteLine(fileName + " downloaded in local drive : " + stationconfig.PCDataFolderPath);
+                        if (ROBOT != null)
+                            ROBOT.OkToEvaluateLiftOff = true;
+                       }
+                       catch (Exception ex)
+                       {
+                           Trace.WriteLine(ex.Message);
+                           Trace.WriteLine(ex.StackTrace);
+                       }
 
-                    //Download this file
-                    myFTP.Download(stationconfig.ForceFilePath, fileName, stationconfig.PCDataFolderPath);
-                    Trace.WriteLine(fileName + " downloaded in local drive : " + stationconfig.PCDataFolderPath);
-                    if (ROBOT != null)
-                        ROBOT.OkToEvaluateLiftOff = true;
+                
                 }
+            
             }
 
+        
         }
+    
     }
+
 }

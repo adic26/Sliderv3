@@ -28,18 +28,18 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;REMICONTROL;INSTRUMENT_LIBRARY</DefineConstants>
+    <DefineConstants>TRACE;INSTRUMENT_LIBRARY;REMICONTROL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DBControl, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DBControl.4.5.228\lib\net45\DBControl.dll</HintPath>
+      <HintPath>..\packages\DBControl.4.5.264\lib\net45\DBControl.dll</HintPath>
     </Reference>
     <Reference Include="DBControl.XmlSerializers, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\DBControl.4.5.228\lib\net45\DBControl.XmlSerializers.dll</HintPath>
+      <HintPath>..\packages\DBControl.4.5.264\lib\net45\DBControl.XmlSerializers.dll</HintPath>
     </Reference>
     <Reference Include="DynamicInterop">
       <HintPath>..\packages\DynamicInterop.0.7.4\lib\net40\DynamicInterop.dll</HintPath>
@@ -49,11 +49,13 @@
       <EmbedInteropTypes>True</EmbedInteropTypes>
       <HintPath>bin\Debug\Interop.FRRobot.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet">
-      <HintPath>..\packages\R.NET.Community.1.5.21\lib\net40\RDotNet.dll</HintPath>
+    <Reference Include="RDotNet, Version=1.5.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.22\lib\net40\RDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="RDotNet.NativeLibrary">
-      <HintPath>..\packages\R.NET.Community.1.5.21\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
+    <Reference Include="RDotNet.NativeLibrary, Version=1.5.22.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\R.NET.Community.1.5.22\lib\net40\RDotNet.NativeLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -69,32 +71,39 @@
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="TsdLib.CodeGenerator, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="TsdLib.CodeGenerator, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TsdLib.CodeGenerator.1.0.78\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
+      <HintPath>..\packages\TsdLib.CodeGenerator.2.0.13-debug\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.Configuration">
-      <HintPath>..\packages\TsdLib.Configuration.1.1.0-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
+    <Reference Include="TsdLib.Configuration, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.Configuration.2.0.95-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.Core">
-      <HintPath>..\packages\TsdLib.Core.1.1.0-debug\lib\net45\TsdLib.Core.dll</HintPath>
+    <Reference Include="TsdLib.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.Core.2.0.44-debug\lib\net45\TsdLib.Core.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.Forms">
-      <HintPath>..\packages\TsdLib.Forms.1.0.13\lib\net45\TsdLib.Forms.dll</HintPath>
+    <Reference Include="TsdLib.Forms, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.Forms.2.0.71-debug\lib\net45\TsdLib.Forms.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.Measurements">
-      <HintPath>..\packages\TsdLib.Measurements.1.1.0-debug\lib\net45\TsdLib.Measurements.dll</HintPath>
+    <Reference Include="TsdLib.Measurements, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.Measurements.2.0.44-debug\lib\net45\TsdLib.Measurements.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.TestSystem">
-      <HintPath>..\packages\TsdLib.TestSystem.1.1.0-debug\lib\net45\TsdLib.TestSystem.dll</HintPath>
+    <Reference Include="TsdLib.TestSystem, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.TestSystem.2.0.171-debug\lib\net45\TsdLib.TestSystem.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.UI">
-      <HintPath>..\packages\TsdLib.UI.1.1.0-debug\lib\net45\TsdLib.UI.dll</HintPath>
+    <Reference Include="TsdLib.UI, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\TsdLib.UI.2.0.57-debug\lib\net45\TsdLib.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\ConnectionStatus.cs" />
     <Compile Include="Communication\DataBuilder.cs" />
+    <Compile Include="Communication\dataFrame.cs" />
     <Compile Include="Communication\dataFrameContainer.cs" />
     <Compile Include="Communication\FTP.cs" />
     <Compile Include="Communication\IntStruct.cs" />
@@ -109,7 +118,6 @@
     <Compile Include="Configuration\ProductConfig.cs" />
     <Compile Include="Configuration\StationConfig.cs" />
     <Compile Include="Configuration\TestConfig.cs" />
-    <Compile Include="Sequences\DummySequence.cs" />
     <Compile Include="Controller\Controller.cs" />
     <Compile Include="UI\Components\CharData.cs">
       <SubType>Component</SubType>

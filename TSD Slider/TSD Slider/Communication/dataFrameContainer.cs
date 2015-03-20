@@ -7,6 +7,7 @@ using RDotNet;
 
 namespace TSD_Slider.Communication
 {
+    [Serializable]
     public class dataFrameContainer : MarshalByRefObject
     {
 

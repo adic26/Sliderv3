@@ -22,27 +22,19 @@ namespace TSD_Slider
 {
     public class Controller : ControllerBase<TSD_SliderView, StationConfig, ProductConfig, TestConfig>
     {
-        public static tsdFanuc ROBOT;
+        public DataBuilder dataCollection;
 
         public Controller(ITestDetails testDetails, IConfigConnection databaseConnection, bool localDomain)
             : base(testDetails,databaseConnection,localDomain)
         {
-            
-            //myView.startButton += new System.EventHandler(myView_startButton);
-            //myView.stopButton += new System.EventHandler(myView_stopButton);
-            //myView.connectButton += new EventHandler(myView_connectButton);
-
-         
+            //this.UI.stationConfig
+            //StationConfig stnConfig = UI.stationConfig as StationConfig;
+            //dataCollection = new DataBuilder(stnConfig.i386Path, stnConfig.RInstallerPath);
         }
 
-
-        private void emergencyStop()
+        public void TestingRawData()
         {
-            if (ROBOT.IsConnected)
-            {
-                ROBOT.AbortMotion();
-                ROBOT.disconnect();
-            }
+            
         }
 
 

@@ -38,9 +38,9 @@ namespace TSD_Slider.Instruments
         public event EventHandler<bool> ftpDownloadDataFile;
         public event EventHandler<bool> getCalibrationData;
         public event EventHandler<bool> getLiftOffValue;
-        private IProgress<int> progressBar;
         public bool OkToEvaluateLiftOff = false;
         private string IPAddress;
+        public EventWaitHandle WaitForFinish;
 
         public int PcCompletedCycles
         {
@@ -95,11 +95,6 @@ namespace TSD_Slider.Instruments
 
         }
 
-        public void setupProgress(IProgress<int> _prog)
-        {
-            Trace.WriteLine("Progress Bar Linked within Robot");
-            progressBar = _prog;
-        }
 
         #region Fanuc Robot Code
 
@@ -188,6 +183,10 @@ namespace TSD_Slider.Instruments
 
                 //Updating connection status
                 IsConnected = true;
+
+                //Connect the waitHandle
+                Trace.WriteLine("Wait Handle Created");
+                WaitForFinish = new EventWaitHandle(false, EventResetMode.AutoReset);
 
                 //Writing on screen the last error and alarm from the robot
                 Trace.WriteLine(string.Format("{0} {1}", mobjAlarms[0].ErrorMnemonic, mobjAlarms[0].ErrorMessage));
@@ -351,6 +350,8 @@ namespace TSD_Slider.Instruments
         {
             try
             {
+                
+
                 selectProgram(tpSlider);
 
                 if (mobjTasks == null)
@@ -383,8 +384,6 @@ namespace TSD_Slider.Instruments
             try
             {
 
-              
-
                 //choosing the program
                 selectProgram(tpChar);
 
@@ -392,7 +391,7 @@ namespace TSD_Slider.Instruments
                 if (objProgram != null)
                 {
                     //making the progressbar absolutely 0 value
-                    progressBar.Report(0);
+                    //progressBar.Report(0);
                     tpChar_lines = objProgram.Lines.Count;
                 }
 
@@ -401,8 +400,6 @@ namespace TSD_Slider.Instruments
 
                 WriteToScreen("Executing Calibration Routine");
                 ExecuteProgram_ContinousMove();
-
-                //Initiate a new timer here
 
             }
             catch (TPProgramNotFoundException notFound)
@@ -594,13 +591,14 @@ namespace TSD_Slider.Instruments
                 //timer_StartCycleTimer(30000);
 
                 //Run the  new program again with the updated register values
-                Task.Run(() => this.startSliderTPProgram());
+                this.startSliderTPProgram();
 
             }
             else if (pcCompletedCycles >= pcCyclesToDo)
             {
                 WriteToScreen("Finished!");
                 disconnect();
+
             }
             else
             {
@@ -661,6 +659,11 @@ namespace TSD_Slider.Instruments
             System.GC.Collect();
 
 
+            if (WaitForFinish != null)
+            {
+                Trace.WriteLine("Finishing Execute Test Method by Setting WaitHandle");
+                WaitForFinish.Set();
+            }
 
 
         }
@@ -749,7 +752,7 @@ namespace TSD_Slider.Instruments
                     case (FRETaskStatusConstants.frStatusRun):
                         int currentLine = progTask.CurLine;
                         int result = ((int)(((float)currentLine / (float)tpChar_lines) * 100));
-                        progressBar.Report(result);
+                        //progressBar.Report(result);
                         break;
                     default:
                         break;

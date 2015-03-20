@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Forms;
+using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using TsdLib;
 using TsdLib.Measurements;
@@ -12,7 +14,9 @@ using TSD_Slider.Instruments;
 using TSD_Slider.UI.Components;
 using TSD_Slider.Configuration;
 using TSD_Slider.Communication;
+using sliderv2.Exceptions;
 using System.Threading.Tasks;
+using TsdLib.Observer;
 
 namespace TSD_Slider.UI.Forms
 {
@@ -40,20 +44,10 @@ namespace TSD_Slider.UI.Forms
 
         #region prototypes
 
-        public int test;
         public StationConfig stationConfig;
         public ProductConfig productConfig;
-        public tsdFanuc fanuc;
-        public event EventHandler startButton;
-        public event EventHandler stopButton;
-        public event EventHandler connectButton;
-        public event EventHandler ftpTestButton;
-        public event EventHandler<bool> TESTLift;
-        public event EventHandler<bool> dataTestButton;
-        public REngine engine;
         public CharData DataGridLiftOffData;
-
-
+        public bool setExecuteRunner;
 
         #endregion
 
@@ -73,6 +67,8 @@ namespace TSD_Slider.UI.Forms
         /// <param name="e"></param>
         private void OnLoad(object sender, EventArgs e)
         {
+            setExecuteRunner = false;
+
             stationConfig = multiConfigControl.SelectedStationConfig[0] as StationConfig;
             productConfig = multiConfigControl.SelectedProductConfig[0] as ProductConfig;
 
@@ -85,9 +81,6 @@ namespace TSD_Slider.UI.Forms
             txtCycleOffset.Text = "0";
             txtLiftOff.Text = productConfig.liftOffPoint.ToString();
 
-            //Fanuc Control
-            fanuc = Controller.ROBOT;
-
             //Important to move to home position in case of emergency stop
             txtFanucIP.Text = stationConfig.Fanuc_Ipaddress;
             txtCharName.Text = stationConfig.TPCharacterizationName;
@@ -97,10 +90,20 @@ namespace TSD_Slider.UI.Forms
             txtRegCycCompleteName.Text = stationConfig.RegCyclesCompletedName;
 
             //Make the data grid view instance
-            DataGridLiftOffData = (TSD_Slider.UI.Components.CharData) charData1;
+            DataGridLiftOffData = charData1;
 
 
         }
+
+        /// <summary>
+        /// Add a general data object to the UI. Uses dynamic method overload resolution to automatically bind to the correct method based on the type of data.
+        /// </summary>
+        /// <param name="dataContainer">Data to add.</param>
+        public void AddData(DataContainer dataContainer)
+        {
+            addData((dynamic)dataContainer.Data);
+        }
+
 
 
         public void updateProgressbar(int value)
@@ -156,8 +159,11 @@ namespace TSD_Slider.UI.Forms
             }
         }
 
+
+
         public void graphCharacterization(List<double> disp, List<double> force)
         {
+            Trace.WriteLine("graphing method reached");
             string seriesName = "Characterization " + ResultsChart.Series.Count;
 
             var newseries = new Series();
@@ -168,7 +174,24 @@ namespace TSD_Slider.UI.Forms
 
             ResultsChart.Series.Add(newseries);
             ResultsChart.Update();
+            Trace.WriteLine("Results Charts Updated");
 
+        }
+
+        public void graphCharacterization(double[] displacement, double[] force)
+        {
+            Trace.WriteLine("graphing method reached");
+            string seriesName = "Characterization " + ResultsChart.Series.Count;
+
+            var newseries = new Series();
+            newseries.ChartType = SeriesChartType.Line;
+            newseries.Name = seriesName;
+
+            newseries.Points.DataBindXY(displacement, force);
+
+            ResultsChart.Series.Add(newseries);
+            ResultsChart.Update();
+            Trace.WriteLine("Results Charts Updated");
         }
 
         /// <summary>
@@ -183,6 +206,12 @@ namespace TSD_Slider.UI.Forms
                 if (tsdCtrl != null)
                     tsdCtrl.SetState(state);
             }
+            if (setExecuteRunner == true)
+            {
+                testSequenceControl.Enabled = false;
+                
+            }
+            setExecuteRunner = true;
         }
 
         /// <summary>
@@ -209,19 +238,20 @@ namespace TSD_Slider.UI.Forms
             Trace.WriteLine(string.Format("String representation: {0}", data));
         }
 
-        private void addData(double data)
+
+        private void addData(dataFrame veniceData)
         {
-            //some logic to add the double to your UI
+            //Update Char data
+            charData1.updateData(veniceData);
+            Trace.WriteLine("Finish Updating the DataGridView");
+
+            //Update Graph
+            graphCharacterization(veniceData.displacement, veniceData.force);
+            Trace.WriteLine("Finish Updating the Graph");
         }
 
-        private void addData(dataFrameContainer x)
-        {
-            //this is the dataframe object
-            //execute my report
-            DataGridLiftOffData.updateData(x.xFrame);
-            graphCharacterization(DataGridLiftOffData.GetValues(stationConfig.scriptDisplacementName), DataGridLiftOffData.GetValues(stationConfig.scriptForceName));
-
-        }
+        
+        
 
         /// <summary>
         /// Update Cycles In View Coming From Robot/Sequence
@@ -241,6 +271,8 @@ namespace TSD_Slider.UI.Forms
             startButtonEnDis(status.status);
             toggleTextBoxes();
         }
+
+
 
         private void ViewBase_FormClosing(object sender, FormClosingEventArgs e)
         {

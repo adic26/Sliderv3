@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using TSD_Slider;
+using TSD_Slider.Communication;
 using RDotNet;
 
 namespace TSD_Slider.UI.Components
@@ -29,10 +30,24 @@ namespace TSD_Slider.UI.Components
             set { force = value; }
         }
 
+        /// <summary>
+        /// Updating data straight from View
+        /// </summary>
+        /// <param name="dataset">R.NET DataFrame</param>
         public void updateData(DataFrame dataset)
         {
+            //Trace.WriteLine("update data under CharData");
             AddMeasurement(dataset);
             //this.Update();
+        }
+
+        /// <summary>
+        /// Updating data straight from View
+        /// </summary>
+        /// <param name="dataset">Struct dataset from Sequence</param>
+        public void updateData(dataFrame dataset)
+        {
+            AddMeasurement(dataset.cycles, dataset.displacement, dataset.force);
         }
 
         /// <summary>
@@ -47,6 +62,38 @@ namespace TSD_Slider.UI.Components
             Rows.Add(newRowObject.ToArray());
         }
 
+        public void AddMeasurement(int[] cycles, double[] displacement, double[] force)
+        {
+            try
+            {
+                Columns.Clear();
+                Rows.Clear();
+                for (int i = 0; i < 3; i++) ColumnCount++;
+
+                Columns[0].Name = "cycles";
+                Columns[1].Name = "displacement";
+                Columns[2].Name = "force";
+
+
+                for (int i = 0; i < displacement.Length; i++)
+                {
+                    RowCount++;
+                    Rows[i].Cells[0].Value = cycles[i];
+                    Rows[i].Cells[1].Value = displacement[i];
+                    Rows[i].Cells[2].Value = force[i];
+                    
+                }
+            }
+            catch (Exception measurementException)
+            {
+                Trace.WriteLine(measurementException.Message);
+                Trace.WriteLine(measurementException.StackTrace);
+            }
+			
+            
+            
+        }
+
         /// <summary>
         /// Addds all the measurement given from R's NumericMatrix calculated from script
         /// </summary>
@@ -55,6 +102,7 @@ namespace TSD_Slider.UI.Components
         {
             try
             {
+                //Trace.WriteLine("Adding Measurement from DataFrame dataset to DataGridView");
                 Columns.Clear();
                 Rows.Clear();
                 for (int i = 0; i < dataset.ColumnCount; i++)

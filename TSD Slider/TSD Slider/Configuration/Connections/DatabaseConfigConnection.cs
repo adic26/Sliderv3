@@ -40,6 +40,26 @@ namespace TSD_Slider.Configuration.Connections
 
             return true;
         }
+
+        public bool CloneMode(string testSystemName, Version testSystemVersion, OperatingMode testSystemMode, Type configType, OperatingMode newMode)
+        {
+            string baseTypeName = ConfigExtensions.GetBaseTypeName(configType);
+            string appVersion = applyVersionFilter(testSystemVersion);
+            return DBControl.DAL.Config.CloneConfigMode(testSystemName, appVersion, testSystemMode.ToString(), baseTypeName, newMode.ToString());
+        }
+
+        public bool CloneVersion(string testSystemName, Version testSystemVersion, OperatingMode testSystemMode, Type configType, Version newVersion)
+        {
+            string baseTypeName = ConfigExtensions.GetBaseTypeName(configType);
+            string appVersion = applyVersionFilter(testSystemVersion);
+            return DBControl.DAL.Config.CloneConfigVersion(testSystemName, appVersion, testSystemMode.ToString(), baseTypeName, newVersion.ToString());
+        }
+
+        private string applyVersionFilter(Version version)
+        {
+            Match match = Regex.Match(version.ToString(), _appVersionFilter);
+            return match.Success ? match.Value : version.ToString();
+        }
     }
 }
 

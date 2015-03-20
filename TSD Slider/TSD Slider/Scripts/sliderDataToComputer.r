@@ -21,6 +21,8 @@ sliderdata_yprofile <- function(directory,myrows = 1:2580) {
     this_set <- read.csv(files_full[i],skip=4,sep="")
     displacement <- this_set$Py.m.
     force <- this_set$Fy.N.
+	displacement <- displacement[myrows]
+	force <- force[myrows]
     retData <- cbind(retData,displacement)
     retData <- cbind(retData,force)
   }
