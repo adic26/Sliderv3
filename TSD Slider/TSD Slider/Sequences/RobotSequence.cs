@@ -143,7 +143,7 @@ namespace TSD_Slider.Sequences
             //simple senddata struct back to view to check whether you are connected or not
             //execute StartButtonEnDis(e);
             //SendData<bool>(e);
-            SendData<ConnectionStatus>(new ConnectionStatus(e));
+            SendDataByValue<ConnectionStatus>(new ConnectionStatus(e));
             
 
         }
@@ -152,12 +152,12 @@ namespace TSD_Slider.Sequences
         {
 
             updateCycles = new IntStruct(e, "UpdateCycles");
-            SendData<IntStruct>(updateCycles);
+            SendDataByValue<IntStruct>(updateCycles);
         }
 
         private void updateProgressBar(int value)
         {
-            SendData<IntStruct>(new IntStruct(value, "progressBar"));
+            SendDataByValue<IntStruct>(new IntStruct(value, "progressBar"));
         }
 
         private void WriteToScreen(string p)
@@ -333,6 +333,7 @@ namespace TSD_Slider.Sequences
                     parameters.Add(stnConfig.scriptParameterName, dataCollection.directory(stnConfig.PCDataFolderPath));
                     DataFrame charDataMatrix = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation, stnConfig.scriptFunctionName, parameters);
                     //SendData<dataFrameContainer>(new dataFrameContainer(charDataMatrix));
+                    SendDataByReference<DataFrame>(new TsdLib.DataContainer<DataFrame>(charDataMatrix));
                 }
                 else
                     Trace.WriteLine("Unable to evaluate Lift off");

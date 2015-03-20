@@ -214,11 +214,11 @@ namespace TSD_Slider.UI.Forms
             //some logic to add the double to your UI
         }
 
-        private void addData(dataFrameContainer x)
+        private void addData(DataContainer<DataFrame> obj)
         {
             //this is the dataframe object
             //execute my report
-            DataGridLiftOffData.updateData(x.xFrame);
+            DataGridLiftOffData.updateData(obj.DataObject);
             graphCharacterization(DataGridLiftOffData.GetValues(stationConfig.scriptDisplacementName), DataGridLiftOffData.GetValues(stationConfig.scriptForceName));
 
         }
