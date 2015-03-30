@@ -109,21 +109,12 @@ namespace TSD_Slider.Sequences
             try
             {
 
-                Trace.WriteLine("Computer Lift Off started");
+                Trace.WriteLine("Computing Lift Off......");
 
                 ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(
                     characterizationData,
                     stnConfig.scriptDisplacementName,
-                    stnConfig.scriptForceName);
-
-                if ((ROBOT.pcLiftOffPoint < 10) || (ROBOT.pcLiftOffPoint > 30.0))
-                {
-                    throw new LiftoffEvalException("Lift Off Force, less than 10.0mm");
-                }
-
-
-
-                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint); 
+                    stnConfig.scriptForceName);  
             }
             catch (Exception ex)
             {
@@ -216,14 +207,11 @@ namespace TSD_Slider.Sequences
                         //ROBOT.ftpDownloadDataFile(this, true);
                         FtpTestButton(stnConfig);
 
-                        //TODO 2.  Evaluate Lift off
                         //execute lift off method
                         if (ROBOT.OkToEvaluateLiftOff)
                         {
-                            //Adds the dataset onto datagridview and on graph
-                            //ROBOT.getCalibrationData(this, OkToEvaluateLiftOff);
-                            //getCalibrationRawData(this, ROBOT.OkToEvaluateLiftOff);
-                            getCalibrationData(true);
+                            //Analyze Data Set
+                            dataAnalyze(true);
                             Trace.WriteLine("Data Extraction/LiftOff Process Completed");
                         }
                         ROBOT.calibrateOrEndCycles();
@@ -248,7 +236,7 @@ namespace TSD_Slider.Sequences
             ROBOT.startSliderTest();
             ROBOT.WaitForFinish.WaitOne(); //Waiting for robot to finish all cycles
 
-            //getCalibrationData(true);
+            //dataAnalyze(true);
             //Thread.Sleep(10000);
             //computeLiftOff(true);
 
@@ -301,7 +289,7 @@ namespace TSD_Slider.Sequences
 
         }
 
-        public string[] archiveDTFiles(StationConfig stationConfig)
+        public void archiveDTFiles(StationConfig stationConfig)
         {
             try
             {
@@ -318,8 +306,6 @@ namespace TSD_Slider.Sequences
                         System.IO.Path.Combine(System.Environment.CurrentDirectory, "archive"));
 
                 }
-
-                return files;
             }
             catch (Exception ex)
             {
@@ -331,10 +317,10 @@ namespace TSD_Slider.Sequences
 
         private void getCalibrationRawData(object sender, bool e)
         {
-            getCalibrationData(e);
+            dataAnalyze(e);
         }
 
-        private void getCalibrationData(bool e)
+        private void dataAnalyze(bool e)
         {
             try
             {
@@ -364,13 +350,23 @@ namespace TSD_Slider.Sequences
                             dataCollection.displacement.ToArray(),
                             dataCollection.force.ToArray());
 
-                        //clean Characterization Data
-                        characterizationData = null;
- 
+                        //Send struct back to UI
                         Trace.WriteLine("Sending Information to UI");
+                        SendData(VeniceLiftOff);
+
                         //Log Measurement
                         //Get the current data file to log
                         string[] files = System.IO.Directory.GetFiles(stnConfig.PCDataFolderPath);
+                        foreach (string robotFiles in files)
+                            Trace.WriteLine(robotFiles);
+
+                        //checking flag for invalid lift off
+                        if ((ROBOT.pcLiftOffPoint < 10) || (ROBOT.pcLiftOffPoint > 30.0))
+                            throw new LiftoffEvalException("Lift Off Force, less than 10.0mm");
+                        Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint); 
+
+                        //clean Characterization Data
+                        characterizationData = null; 
 
                         //update the measurement
                         MeasurementParameter[] measurementParameteres = 
@@ -380,10 +376,7 @@ namespace TSD_Slider.Sequences
                             "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
 
                         //Archive Data Here : Omit for testing only
-                        //archiveDTFiles(stnConfig);
-
-                        //TODO: Send struct back to UI
-                        SendData(VeniceLiftOff);
+                        archiveDTFiles(stnConfig);
                     }
                     else
                     {
