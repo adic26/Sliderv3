@@ -75,9 +75,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\TsdLib.CodeGenerator.2.0.13-debug\lib\net45\TsdLib.CodeGenerator.dll</HintPath>
     </Reference>
-    <Reference Include="TsdLib.Configuration, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="TsdLib.Configuration, Version=2.1.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\TsdLib.Configuration.2.0.95-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
+      <HintPath>..\packages\TsdLib.Configuration.2.1.2-debug\lib\net45\TsdLib.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="TsdLib.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>

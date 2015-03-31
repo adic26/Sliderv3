@@ -35,8 +35,7 @@ namespace TSD_Slider.Configuration.Connections
             string appVersion = match.Success ? match.Value : testSystemVersion.ToString();
             data = DBControl.DAL.Config.GetConfig(testSystemName, appVersion, testSystemMode.ToString(), baseTypeName);
             if (string.IsNullOrEmpty(data))
-                return false;
-            
+                return false;          
 
             return true;
         }
