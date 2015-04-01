@@ -65,7 +65,7 @@ namespace TSD_Slider.Instruments
 
         public bool IsConnected
         {
-            get { return isConnected; }
+            get { return mobjRobot.IsConnected; }
             set
             {
 
@@ -103,32 +103,43 @@ namespace TSD_Slider.Instruments
         /// </summary>
         public void disconnect()
         {
-            //deleting all copies of registers
-            if (copyRegisters.Keys.Count != 0)
+            try
             {
-                foreach (string copies in copyRegisters.Keys)
-                    DeletePosition(copies);
+                //deleting all copies of registers
+                if (copyRegisters.Keys.Count != 0)
+                {
+                    foreach (string copies in copyRegisters.Keys)
+                        DeletePosition(copies);
+                }
+
+                dataRegisters.Clear();
+                dataRegisterNameToValue.Clear();
+
+                /* Unsubscribing to the alarm event */
+                mobjAlarms.AlarmNotify -= new IAlarmNotify_AlarmNotifyEventHandler(mobjAlarms_AlarmNotify);
+                mobjTasks.Change -= new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+                mobjRobot.Error -= new IRobotEvents_ErrorEventHandler(robotError);
+                allMyProg.Select -= new IProgramsEvents_SelectEventHandler(ProgramSelected);
+                allSysRegisters.Change -= new ISysPositionsEvents_ChangeEventHandler(mobjSysPosition_Change);
+                mobjTasks.Change -= new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+
+                //updating connection status
+                IsConnected = false;
+
+                Trace.WriteLine("Disconnected");
+
             }
+            catch (Exception ex)
+            {
 
-            dataRegisters.Clear();
-            dataRegisterNameToValue.Clear();
-
-            /* Unsubscribing to the alarm event */
-            mobjAlarms.AlarmNotify -= new IAlarmNotify_AlarmNotifyEventHandler(mobjAlarms_AlarmNotify);
-            mobjTasks.Change -= new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
-            mobjRobot.Error -= new IRobotEvents_ErrorEventHandler(robotError);
-            allMyProg.Select -= new IProgramsEvents_SelectEventHandler(ProgramSelected);
-            allSysRegisters.Change -= new ISysPositionsEvents_ChangeEventHandler(mobjSysPosition_Change);
-            mobjTasks.Change -= new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
-
-            //updating connection status
-            IsConnected = false;
-
-            Trace.WriteLine("Disconnected");
-
-            /* Releasing the object and calling GC on them */
-            releaseObjects();
-
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+            finally
+            {
+                /* Releasing the object and calling GC on them */
+                releaseObjects();
+            }
 
         }
 
@@ -144,6 +155,7 @@ namespace TSD_Slider.Instruments
                 this.IPAddress = ipaddress;
                 mobjRobot = new FRCRobot();
                 mobjRobot.Error += new IRobotEvents_ErrorEventHandler(robotError);
+                mobjRobot.Disconnect += new IRobotEvents_DisconnectEventHandler(robotDisconnect);
                 mobjRobot.Connect(ipaddress);
 
                 /* Subscribing to the alarm event */
@@ -206,6 +218,11 @@ namespace TSD_Slider.Instruments
                 Trace.WriteLine(connectException.Message + " - HRESULT:" + connectException.HResult.ToString());
                 releaseObjects();
             }
+        }
+
+        private void robotDisconnect()
+        {
+ 	        IsConnected = false;
         }
 
         public void startSliderTest()
@@ -346,11 +363,11 @@ namespace TSD_Slider.Instruments
             }
         }
 
-        private void startSliderTPProgram()
+        public void startSliderTPProgram()
         {
             try
             {
-                
+
 
                 selectProgram(tpSlider);
 
@@ -396,7 +413,15 @@ namespace TSD_Slider.Instruments
                 }
 
                 if (!mobjTasks.IsMonitoring)
-                    mobjTasks.StartMonitor(1500);
+                {
+                    Trace.WriteLine("Nothing is monitoring. Starting a new Monitor for " + tpChar);
+                    mobjTasks.StartMonitor(2400);
+                }
+                else
+                {
+                    Trace.WriteLine("WARNING: Old monitor still active");
+                    //clear all monitoring events if possible
+                }
 
                 WriteToScreen("Executing Calibration Routine");
                 ExecuteProgram_ContinousMove();
@@ -412,6 +437,7 @@ namespace TSD_Slider.Instruments
                 WriteToScreen(ex.Message);
                 WriteToScreen(ex.StackTrace);
                 disconnect();
+                
             }
         }
 
@@ -517,11 +543,19 @@ namespace TSD_Slider.Instruments
         /// <param name="registerName">Register Name to UN-Monitor</param>
         public void StopMonitorDataRegister(string registerName)
         {
-            registerName = dataRegisterNameToValue[registerName];
-            FRCVar selectedRegister = dataRegisters[registerName].Parent;
-            if (selectedRegister.IsMonitoring)
+            try
             {
-                selectedRegister.StopMonitor();
+                registerName = dataRegisterNameToValue[registerName];
+                FRCVar selectedRegister = dataRegisters[registerName].Parent;
+                if (selectedRegister.IsMonitoring)
+                {
+                    selectedRegister.StopMonitor();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine("cannot find registername: " + registerName);
+                Trace.WriteLine(ex.Message);
             }
         }
 
@@ -644,26 +678,40 @@ namespace TSD_Slider.Instruments
         private void releaseObjects()
         {
 
-            WriteToScreen("Stopping Watch Event for Slider Completed - Changes!");
-            StopMonitorDataRegister(robot_SLIDER_COMPLETED_registerName); //Stopping Monitor : Telling ActiveX robot
-
-            WriteToScreen("Stopping Event - Devoking event handlers");
-            mobjNumericRegisters.Change -= register_Change; //Register Event Devoking
-
-            WriteToScreen("Stopping Monitor for Task Change Events");
-            if (mobjTasks.IsMonitoring) mobjTasks.StopMonitor();
-
-
-            mobjRobot = (FRCRobot)releaseObject("FRRobot.FRCRobot", mobjRobot);
-            mobjAlarms = (FRCAlarms)releaseObject("FRRobot.FRCAlarms", mobjAlarms);
-            System.GC.Collect();
-
-
-            if (WaitForFinish != null)
+            try
             {
-                Trace.WriteLine("Finishing Execute Test Method by Setting WaitHandle");
-                WaitForFinish.Set();
+                WriteToScreen("Stopping Watch Event for Slider Completed - Changes!");
+                StopMonitorDataRegister(robot_SLIDER_COMPLETED_registerName); //Stopping Monitor : Telling ActiveX robot
+
+                WriteToScreen("Stopping Event - Devoking event handlers");
+                mobjNumericRegisters.Change -= register_Change; //Register Event Devoking
+
+                WriteToScreen("Stopping Monitor for Task Change Events");
+                if (mobjTasks.IsMonitoring) mobjTasks.StopMonitor();
+
+
+               
             }
+            catch (Exception ex)
+            {
+
+                Trace.WriteLine(ex.Message);
+                Trace.WriteLine(ex.StackTrace);
+            }
+            finally
+            {
+                if (WaitForFinish != null)
+                {
+                    Trace.WriteLine("Finishing Execute Test Method by Setting WaitHandle");
+                    WaitForFinish.Set();
+                }
+
+                mobjRobot = (FRCRobot)releaseObject("FRRobot.FRCRobot", mobjRobot);
+                mobjAlarms = (FRCAlarms)releaseObject("FRRobot.FRCAlarms", mobjAlarms);
+                System.GC.Collect();
+            }
+
+            
 
 
         }
@@ -787,6 +835,7 @@ namespace TSD_Slider.Instruments
         {
             WriteToScreen(Error.Number.ToString() + "-" + Error.Description);
         }
+
 
         /// <summary>
         /// Manually Fault Reset
@@ -1350,5 +1399,7 @@ namespace TSD_Slider.Instruments
         }
 
         #endregion
+
+        
     }
 }

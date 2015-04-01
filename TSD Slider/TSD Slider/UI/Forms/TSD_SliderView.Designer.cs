@@ -68,9 +68,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.tbData = new System.Windows.Forms.TabPage();
-            this.tbEngScreen = new System.Windows.Forms.TabPage();
+            this.charData1 = new TSD_Slider.UI.Components.CharData();
             this.tbGraphs = new System.Windows.Forms.TabPage();
             this.ResultsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tbEngScreen = new System.Windows.Forms.TabPage();
             this.progCalibration = new System.Windows.Forms.ProgressBar();
             this.label13 = new System.Windows.Forms.Label();
             this.traceListenerTextBoxControl = new TsdLib.UI.Controls.TraceListenerTextBoxControl();
@@ -79,16 +80,15 @@
             this.testSequenceControl = new TsdLib.UI.Controls.TestSequenceControl();
             this.testInfoDataGridViewControl = new TsdLib.UI.Controls.TestInfoDataGridViewControl();
             this.measurementDataGridViewControl = new TsdLib.UI.Controls.MeasurementDataGridViewControl();
-            this.charData1 = new TSD_Slider.UI.Components.CharData();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbSliderCycle.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tbData.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.charData1)).BeginInit();
             this.tbGraphs.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ResultsChart)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charData1)).BeginInit();
             this.SuspendLayout();
             // 
             // MeasurementName
@@ -439,14 +439,16 @@
             this.tbData.Text = "Data";
             this.tbData.UseVisualStyleBackColor = true;
             // 
-            // tbEngScreen
+            // charData1
             // 
-            this.tbEngScreen.Location = new System.Drawing.Point(4, 22);
-            this.tbEngScreen.Name = "tbEngScreen";
-            this.tbEngScreen.Size = new System.Drawing.Size(550, 766);
-            this.tbEngScreen.TabIndex = 2;
-            this.tbEngScreen.Text = "Engineering Screen";
-            this.tbEngScreen.UseVisualStyleBackColor = true;
+            this.charData1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.charData1.Displacement = null;
+            this.charData1.Force = null;
+            this.charData1.Location = new System.Drawing.Point(38, 20);
+            this.charData1.Name = "charData1";
+            this.charData1.ReadOnly = true;
+            this.charData1.Size = new System.Drawing.Size(379, 643);
+            this.charData1.TabIndex = 0;
             // 
             // tbGraphs
             // 
@@ -465,11 +467,20 @@
             this.ResultsChart.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             this.ResultsChart.Legends.Add(legend1);
-            this.ResultsChart.Location = new System.Drawing.Point(25, 17);
+            this.ResultsChart.Location = new System.Drawing.Point(17, 17);
             this.ResultsChart.Name = "ResultsChart";
             this.ResultsChart.Size = new System.Drawing.Size(519, 709);
             this.ResultsChart.TabIndex = 0;
             this.ResultsChart.Text = "chart1";
+            // 
+            // tbEngScreen
+            // 
+            this.tbEngScreen.Location = new System.Drawing.Point(4, 22);
+            this.tbEngScreen.Name = "tbEngScreen";
+            this.tbEngScreen.Size = new System.Drawing.Size(550, 766);
+            this.tbEngScreen.TabIndex = 2;
+            this.tbEngScreen.Text = "Engineering Screen";
+            this.tbEngScreen.UseVisualStyleBackColor = true;
             // 
             // progCalibration
             // 
@@ -531,16 +542,6 @@
             this.measurementDataGridViewControl.Size = new System.Drawing.Size(961, 282);
             this.measurementDataGridViewControl.TabIndex = 1;
             // 
-            // charData1
-            // 
-            this.charData1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.charData1.Displacement = null;
-            this.charData1.Force = null;
-            this.charData1.Location = new System.Drawing.Point(38, 20);
-            this.charData1.Name = "charData1";
-            this.charData1.Size = new System.Drawing.Size(489, 643);
-            this.charData1.TabIndex = 0;
-            // 
             // TSD_SliderView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -573,9 +574,9 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.tbData.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.charData1)).EndInit();
             this.tbGraphs.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ResultsChart)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.charData1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

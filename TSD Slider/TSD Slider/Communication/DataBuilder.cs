@@ -153,7 +153,7 @@ namespace TSD_Slider.Communication
             catch (LiftoffEvalException ex)
             {
                 Trace.WriteLine(ex.Message);
-                throw;
+                throw new LiftoffEvalException("Lift Off Error");
             }
             catch (Exception ex)
             {

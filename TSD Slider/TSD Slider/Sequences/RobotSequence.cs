@@ -27,6 +27,9 @@ namespace TSD_Slider.Sequences
         public DataBuilder dataCollection;
         public DataFrame characterizationData;
         public dataFrame VeniceLiftOff;
+        public Timer robServer;
+        public Queue<string> robotServerHits;
+        public int progResultBar;
 
         protected override void ExecutePreTest(CancellationToken token, StationConfig stationconfig, ProductConfig productconfig)
         {
@@ -75,6 +78,8 @@ namespace TSD_Slider.Sequences
             //Set up Progress Bar - the first time you connect
             updateProgressBar(0);
 
+
+
             
             
         }
@@ -104,6 +109,36 @@ namespace TSD_Slider.Sequences
             computeLiftOff(e);
         }
 
+        private void updateMeasurement()
+        {
+
+            //Log Measurement
+            //Get the current data file to log
+            string[] files = System.IO.Directory.GetFiles(stnConfig.PCDataFolderPath);
+            foreach (string robotFiles in files)
+                Trace.WriteLine(robotFiles);
+
+            //update the measurement
+            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
+            AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
+                "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
+
+        }
+
+        private void updateMeasurement(string filename)
+        {
+            //Log Measurement
+            //Get the current data file to log
+            string[] files = new string[] { filename };
+            foreach (string robotFiles in files)
+                Trace.WriteLine(robotFiles);
+
+            //update the measurement
+            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
+            AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
+                "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
+        }
+
         private void computeLiftOff(bool e)
         {
             try
@@ -114,13 +149,36 @@ namespace TSD_Slider.Sequences
                 ROBOT.pcLiftOffPoint = dataCollection.EvaluateLiftOffPoint(
                     characterizationData,
                     stnConfig.scriptDisplacementName,
-                    stnConfig.scriptForceName);  
+                    stnConfig.scriptForceName);
+
+                //check flag for invalid lift off
+                if ((ROBOT.pcLiftOffPoint < 10) || (ROBOT.pcLiftOffPoint > 30.0))
+                    throw new LiftoffEvalException("Lift Off Force, less than 10.0mm");
+
+                Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint);
+            }
+            catch (LiftoffEvalException liftoff)
+            {
+                Trace.WriteLine(liftoff.Message);
+                Trace.WriteLine(liftoff.StackTrace);
+
+               //archive file here
+               string errorDtFile = archiveDTFiles(stnConfig);
+
+               if (liftoff.Message != "Lift Off Force, less than 10.0mm")
+                   ROBOT.pcLiftOffPoint = -1; //force fail
+
+               //log usually
+               updateMeasurement(errorDtFile);
+
+               //going back to default lift off setting
+               Trace.WriteLine("Setting back to 25.45mm liftoff point");
+               ROBOT.pcLiftOffPoint = 25.45;
             }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
                 Trace.WriteLine(ex.StackTrace);
-                throw;
             }
         }
 
@@ -140,6 +198,11 @@ namespace TSD_Slider.Sequences
             //execute StartButtonEnDis(e);
             //SendData<bool>(e);
             SendDataByValue<ConnectionStatus>(new ConnectionStatus(e));
+
+            if (!e)
+                Trace.WriteLine("Robot Disconnected");
+
+
 
         }
 
@@ -162,11 +225,15 @@ namespace TSD_Slider.Sequences
 
         private void mobjTasks_Change(FREStatusTypeConstants ChangeType, FRCTask progTask)
         {
+            
             //Slider Change or Characterization Change
             if (progTask.CurProgram.Name == ROBOT.tpSlider)
             {
                 switch (progTask.Status)
                 {
+                    case(FRETaskStatusConstants.frStatusRun):
+                        robotServerHits.Enqueue("HIT");
+                        break;
                     case (FRETaskStatusConstants.frStatusIdle):
                         WriteToScreen("Idle Status: " + progTask.CurProgram.Name);
                         break;
@@ -179,6 +246,10 @@ namespace TSD_Slider.Sequences
                         WriteToScreen("Stopping Watch Event for Slider Completed - Changes!");
                         ROBOT.StopMonitorDataRegister(ROBOT.robot_SLIDER_COMPLETED_registerName); //Stopping Monitor : Telling ActiveX robot
 
+                        //Stop Timer and dispose the queue
+                        robServer.Dispose(); //This both stops the timer and cleans up
+                        robotServerHits = null; //GC queue
+                        
                         //Calibration routine
                         ROBOT.startCalibrationTPProgram();
                         break;
@@ -214,6 +285,13 @@ namespace TSD_Slider.Sequences
                             dataAnalyze(true);
                             Trace.WriteLine("Data Extraction/LiftOff Process Completed");
                         }
+
+                        //Timer Start
+                        Trace.WriteLine("Starting timer thread to control Robot Server");
+                        //Start timer and queue
+                        ServerCheck();
+
+                        Trace.WriteLine("Calibrate or End Cycles Method Invoke");
                         ROBOT.calibrateOrEndCycles();
                         break;
                     case (FRETaskStatusConstants.frStatusRun):
@@ -221,11 +299,73 @@ namespace TSD_Slider.Sequences
                         int result = ((int)(((float)currentLine / (float)ROBOT.tpChar_lines) * 100));
                         //progressBar.Report(result);
                         updateProgressBar(result);
-
+                        Trace.WriteLine(result.ToString());
+                        break;
+                    case (FRETaskStatusConstants.frStatusPaused):
+                        Trace.WriteLine(progTask.CurProgram.Name + " is paused");
+                        break;
+                    case (FRETaskStatusConstants.frStatusIdle):
+                        Trace.WriteLine(progTask.CurProgram.Name + " Indicates that the task is not running, is not paused, has not been running in the past, and has been aborted");
                         break;
                     default:
                         break;
                 }
+            }
+        }
+
+        private void ServerCheck()
+        {
+            robotServerHits = new Queue<string>();
+            robServer = new Timer(HitEvery1Min, "HIT", 60000, 60000);
+        }
+
+        private void HitEvery1Min(object state)
+        {
+            //check at every hit
+            if (robotServerHits.Count == 0)
+            {
+                bool flag = ROBOT.mobjRobot.IsConnected;
+                Trace.WriteLine("Queue count is 0. Status of Connection - " + flag.ToString());
+
+                if (!flag)
+                {
+                    //server has crashed
+                    Trace.WriteLine("Server Has Crashed!");
+                    //Send the disconnect line
+                    myView_robotConnectStatus(this, false);
+
+                    //Reinitialize Robot Server, connect Task_Change Event and Re-Start the monitor Register Start Services
+                    ROBOT.connect(stnConfig.Fanuc_Ipaddress);
+                    Trace.WriteLine("ReConnected!");
+
+                    //Connect Task Change
+                    Trace.WriteLine("Attaching Events with Task Change and Numeric Register Change");
+                    ROBOT.mobjTasks.Change += new ITasksEvents_ChangeEventHandler(mobjTasks_Change);
+                    ROBOT.mobjNumericRegisters.Change += new IVarsEvents_ChangeEventHandler(register_Change);
+
+                    //ReStart Monitor Register Start Services
+                    Trace.WriteLine("Monitoring Slider Completed Register and Task Change Events");
+                    ROBOT.monitorRegister(ROBOT.robot_SLIDER_COMPLETED_registerName); //register change monitor
+                    ROBOT.mobjTasks.StartMonitor(2400);
+
+                }
+                else if (flag)
+                {
+                    //it is connected, however the program as halted - time to restart this program from wherever it is paused
+                    //Slider Program - as this is only hit during the timing HIT
+                    //Clear any alarms if there are any
+                    ROBOT.FaultReset(); //mobjAlarms.Reset()
+                    ROBOT.ExecuteProgram_ContinousMove();
+                }
+
+                
+
+            }
+            else if (robotServerHits.Count > 0)
+            {
+                Trace.WriteLine("Found events in Queue -- " + robotServerHits.Count.ToString());
+                Trace.WriteLine("Clearing Events...");
+                robotServerHits.Clear();
             }
         }
 
@@ -289,11 +429,12 @@ namespace TSD_Slider.Sequences
 
         }
 
-        public void archiveDTFiles(StationConfig stationConfig)
+        public string archiveDTFiles(StationConfig stationConfig)
         {
             try
             {
                 string[] files = System.IO.Directory.GetFiles(stationConfig.PCDataFolderPath);
+                string lastfile = "";
 
                 foreach (string s in files)
                 {
@@ -304,8 +445,10 @@ namespace TSD_Slider.Sequences
                         System.IO.Path.GetFileName(s) +
                         " Archived in " +
                         System.IO.Path.Combine(System.Environment.CurrentDirectory, "archive"));
+                    lastfile = destFile;
 
                 }
+                return lastfile;
             }
             catch (Exception ex)
             {
@@ -328,18 +471,18 @@ namespace TSD_Slider.Sequences
                 {
                     //setting up parameters
                     var parameters = new Dictionary<string, SymbolicExpression>();
-                    parameters.Add(stnConfig.scriptParameterName, 
+                    parameters.Add(stnConfig.scriptParameterName,
                         dataCollection.directory(stnConfig.PCDataFolderPath));
 
                     //Raw Data
-                    characterizationData = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation, 
-                        stnConfig.scriptFunctionName, 
+                    characterizationData = dataCollection.GetLiftOffRawData(stnConfig.scriptLocation,
+                        stnConfig.scriptFunctionName,
                         parameters);
                     Trace.WriteLine("Evaluation Lift Off Raw Data completed");
 
                     if (characterizationData != null)
                     {
-                       
+
 
                         computeLiftOff(true); // no archiving
                         Trace.WriteLine("Lift Off Module Completed");
@@ -354,29 +497,9 @@ namespace TSD_Slider.Sequences
                         Trace.WriteLine("Sending Information to UI");
                         SendData(VeniceLiftOff);
 
-                        //Log Measurement
-                        //Get the current data file to log
-                        string[] files = System.IO.Directory.GetFiles(stnConfig.PCDataFolderPath);
-                        foreach (string robotFiles in files)
-                            Trace.WriteLine(robotFiles);
-
-                        //checking flag for invalid lift off
-                        if ((ROBOT.pcLiftOffPoint < 10) || (ROBOT.pcLiftOffPoint > 30.0))
-                            throw new LiftoffEvalException("Lift Off Force, less than 10.0mm");
-                        Trace.WriteLine("New Lift Off Value --> " + ROBOT.pcLiftOffPoint); 
-
                         //clean Characterization Data
-                        characterizationData = null; 
+                        characterizationData = null;
 
-                        //update the measurement
-                        MeasurementParameter[] measurementParameteres = 
-                        { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
-
-                        AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
-                            "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
-
-                        //Archive Data Here : Omit for testing only
-                        archiveDTFiles(stnConfig);
                     }
                     else
                     {
@@ -391,6 +514,15 @@ namespace TSD_Slider.Sequences
             {
                 Trace.WriteLine(ex.Message);
                 Trace.WriteLine(ex.StackTrace);
+            }
+            finally
+            {
+                //Archive Data Here : Omit for testing only
+                string fileToLog = archiveDTFiles(stnConfig);
+
+                //Log file here except when the string is empty
+                if (fileToLog!="")
+                    updateMeasurement(fileToLog);
             }
         }
 
@@ -424,10 +556,15 @@ namespace TSD_Slider.Sequences
                     //finding out the maximum file by sorting and downloading this specific file
                     //var sortedOrder = temp.OrderByDescending&lt;string, int&gt;(s =&gt; int.Parse(s.Replace("fsdt", "")));
                     //string fileName = sortedOrder.ElementAt(1);
+                    //List of all files
+                    foreach (string dtFiles in temp)
+                        Trace.WriteLine(dtFiles);
+                    
                     int MaxIndex;
                     Trace.WriteLine("Finding Max Index of File List");
                    try
                    {
+                       temp.Sort();
                        MaxIndex = temp.IndexOf(temp.Max<string>());
                        Trace.WriteLine("Finding MaxIndex " + MaxIndex.ToString());
                        string fileName = temp.ElementAt(MaxIndex - 1);
