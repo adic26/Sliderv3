@@ -564,15 +564,20 @@ namespace TSD_Slider.Sequences
                     Trace.WriteLine("Finding Max Index of File List");
                    try
                    {
-                       temp.Sort();
+                       var onlyfsdt = from fsdt in temp
+                                      where fsdt.Contains("fsdt")
+                                      orderby fsdt
+                                      select fsdt;
+                       temp = onlyfsdt.ToList<string>();
+
                        MaxIndex = temp.IndexOf(temp.Max<string>());
                        Trace.WriteLine("Finding MaxIndex " + MaxIndex.ToString());
                        string fileName = temp.ElementAt(MaxIndex - 1);
                        Trace.WriteLine("Most Updated DT File is : " + fileName);
                        if (fileName.Contains("9999"))
                            Trace.WriteLine("Reached MAXIMUM FILE. " +
-                               "Please not the lift off values will not be determined anymore" +
-                               ".  Please delete from the folder " + stationconfig.ForceFilePath);
+                               "Lift off values will not be determined anymore" +
+                               ".  Please delete files from the folder " + stationconfig.ForceFilePath);
                         //Download this file
                         myFTP.Download(stationconfig.ForceFilePath, fileName, stationconfig.PCDataFolderPath);
                         Trace.WriteLine(fileName + " downloaded in local drive : " + stationconfig.PCDataFolderPath);
