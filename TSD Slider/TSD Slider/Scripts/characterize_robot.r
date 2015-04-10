@@ -5,6 +5,7 @@ characterization_robot <- function(directory)
   #source('sliderDataToComputer.r')
   #source('datasetReturn.r')
   
-  oldset <- sliderdata_yprofile(directory)
+  #oldset <- sliderdata_yprofile(directory)
+  oldset <- sliderdataSingleProfile(directory)
   cleanset <- datasetwithseries(oldset)
 }

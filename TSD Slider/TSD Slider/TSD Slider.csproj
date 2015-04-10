@@ -138,6 +138,7 @@
     <None Include="Scripts\datasetReturn.r" />
     <None Include="Scripts\plots.r" />
     <None Include="Scripts\sliderDataToComputer.r" />
+    <None Include="Scripts\sliderSingleProfile.r" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="UI\Forms\TSD_SliderView.resx">
