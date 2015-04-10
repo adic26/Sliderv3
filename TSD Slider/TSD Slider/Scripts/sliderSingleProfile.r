@@ -16,7 +16,7 @@ sliderdataSingleProfile <- function(directory,myrows = 1:2580) {
   ## where 'id' is the monitor ID number and 'nobs' is the
   ## number of complete cases  
 
-    this_set <- read.csv(files_full[0],skip=4,sep="")
+    this_set <- read.csv(files_full,skip=4,sep="")
     mynewrow <- 1:nrow(this_set)
     retData <- cbind(mynewrow)
     displacement <- this_set$Py.m.

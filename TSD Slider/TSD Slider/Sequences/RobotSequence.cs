@@ -30,6 +30,7 @@ namespace TSD_Slider.Sequences
         public Timer robServer;
         public Queue<string> robotServerHits;
         public int progResultBar;
+        public double tempLiftOff;
 
         protected override void ExecutePreTest(CancellationToken token, StationConfig stationconfig, ProductConfig productconfig)
         {
@@ -77,6 +78,7 @@ namespace TSD_Slider.Sequences
 
             //Set up Progress Bar - the first time you connect
             updateProgressBar(0);
+            tempLiftOff = 0;
 
 
 
@@ -109,23 +111,12 @@ namespace TSD_Slider.Sequences
             computeLiftOff(e);
         }
 
-        private void updateMeasurement()
-        {
-
-            //Log Measurement
-            //Get the current data file to log
-            string[] files = System.IO.Directory.GetFiles(stnConfig.PCDataFolderPath);
-            foreach (string robotFiles in files)
-                Trace.WriteLine(robotFiles);
-
-            //update the measurement
-            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
-            AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
-                "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
-
-        }
-
-        private void updateMeasurement(string filename)
+        /// <summary>
+        /// Update Measurements
+        /// </summary>
+        /// <param name="filename">Name of the file that you will be logging with after archive</param>
+        /// <param name="optionalLogger">Default liftoff as -1</param>
+        private void updateMeasurement(string filename,double LiftOff = -1)
         {
             //Log Measurement
             //Get the current data file to log
@@ -134,10 +125,12 @@ namespace TSD_Slider.Sequences
                 Trace.WriteLine(robotFiles);
 
             //update the measurement
-            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
+            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", LiftOff) };
             AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
                 "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
         }
+
+        
 
         private void computeLiftOff(bool e)
         {
@@ -165,15 +158,13 @@ namespace TSD_Slider.Sequences
                //archive file here
                string errorDtFile = archiveDTFiles(stnConfig);
 
-               if (liftoff.Message != "Lift Off Force, less than 10.0mm")
-                   ROBOT.pcLiftOffPoint = -1; //force fail
-
                //log usually
-               updateMeasurement(errorDtFile);
+               updateMeasurement(errorDtFile,LiftOff: ROBOT.pcLiftOffPoint);
 
-               //going back to default lift off setting
-               Trace.WriteLine("Setting back to 25.45mm liftoff point");
-               ROBOT.pcLiftOffPoint = 25.45;
+               //going back to default lift off setting if lift force is less than 30 < L < 10
+               Trace.WriteLine("Setting back old LiftOff point");
+               ROBOT.pcLiftOffPoint = tempLiftOff;
+               Trace.WriteLine("Lift Off Point Set to " + tempLiftOff.ToString());
             }
             catch (Exception ex)
             {
@@ -503,17 +494,34 @@ namespace TSD_Slider.Sequences
                     }
                     else
                     {
-                        throw new Exception("unable to find dataframe");
+                        throw new DataFrameNotFoundException("unable to find dataframe");
                     }
 
                 }
                 else
                     Trace.WriteLine("Unable to evaluate Lift off");
             }
+            catch (DataFrameNotFoundException dfNotFound)
+            {
+                Trace.WriteLine(dfNotFound.Message);
+                Trace.WriteLine(dfNotFound.StackTrace);
+                
+                //data frame not found due to error in rdotnet
+                //we must force this as a fail but preserve robot.pcliftoffpoint for next cycle
+                //we must archive the file here so that we can use it
+                string errorFile = archiveDTFiles(stnConfig);
+
+                //Log with -1 error
+                updateMeasurement(errorFile); //default of -1
+
+
+
+            }
             catch (Exception ex)
             {
                 Trace.WriteLine(ex.Message);
                 Trace.WriteLine(ex.StackTrace);
+
             }
             finally
             {
@@ -522,7 +530,16 @@ namespace TSD_Slider.Sequences
 
                 //Log file here except when the string is empty
                 if (fileToLog!="")
-                    updateMeasurement(fileToLog);
+                    updateMeasurement(fileToLog,LiftOff: ROBOT.pcLiftOffPoint);
+
+                if (ROBOT.pcLiftOffPoint == 0)
+                {
+                    Trace.WriteLine("setting to default lift off point");
+                    ROBOT.pcLiftOffPoint = prdConfig.liftOffPoint; //default lift off point
+                }
+
+                //putting old liftoffpoint in memory
+                tempLiftOff = ROBOT.pcLiftOffPoint;
             }
         }
 

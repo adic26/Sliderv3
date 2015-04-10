@@ -58,7 +58,7 @@ namespace TSD_Slider.Instruments
 
             }
         }
-        public double pcLiftOffPoint;
+        public double pcLiftOffPoint = 0;
         public string tpChar, tpSlider;
         public int tpChar_lines;
         private bool isConnected = false;
@@ -293,11 +293,8 @@ namespace TSD_Slider.Instruments
             //Before selecting the program - make sure to abort any programs if running any
             mobjTasks.AbortAll(true);
 
-
-
             //Start off with calibration program
             startCalibrationTPProgram();
-
 
         }
 
