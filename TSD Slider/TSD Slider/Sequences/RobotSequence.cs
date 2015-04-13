@@ -125,12 +125,10 @@ namespace TSD_Slider.Sequences
                 Trace.WriteLine(robotFiles);
 
             //update the measurement
-            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", LiftOff) };
-            AddMeasurement(new Measurement<double>("Lift Off Point", ROBOT.pcLiftOffPoint,
+            MeasurementParameter[] measurementParameteres = { new MeasurementParameter("#Cycles", ROBOT.PcCompletedCycles) };
+            AddMeasurement(new Measurement<double>("Lift Off Point", LiftOff,
                 "mm", 18.0, 28.0, files: files, parameters: measurementParameteres));
         }
-
-        
 
         private void computeLiftOff(bool e)
         {

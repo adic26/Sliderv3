@@ -96,12 +96,14 @@ namespace TSD_Slider
 
         protected override void PublishResults(TsdLib.Measurements.ITestResults results)
         {
-            string xmlFile = TsdLib.SpecialFolders.GetResultsFileName(results.Details, results.Summary, "xml");
+            //string xmlFile = TsdLib.SpecialFolders.GetResultsFileName(results.Details, results.Summary, "xml");
+            string xmlFile = System.IO.Path.Combine(TsdLib.SpecialFolders.GetResultsFolder(results.Details.SafeTestSystemName).FullName, TsdLib.SpecialFolders.GetResultsFileName(results.Details, results.Summary, "xml"));
             string path = System.IO.Path.GetDirectoryName(xmlFile);
             if (path == null)
                 throw new System.IO.DirectoryNotFoundException("The results folder does not exist on this machine.");
             System.Diagnostics.Trace.WriteLine("Uploading results to database...");
             System.Diagnostics.Trace.WriteLine("XML Path: " + path);
+            System.Diagnostics.Trace.WriteLine("xmlFile : " + xmlFile);
             DBControl.DAL.Results.UploadXML(xmlFile, path, System.IO.Path.Combine(path, "PublishFailed"), System.IO.Path.Combine(path, "Published"), false, true);
             System.Diagnostics.Trace.WriteLine("Upload complete. Results can be viewed at " + results.Details.RequestNumber);
         }
