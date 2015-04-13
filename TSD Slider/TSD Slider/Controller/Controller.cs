@@ -101,6 +101,7 @@ namespace TSD_Slider
             if (path == null)
                 throw new System.IO.DirectoryNotFoundException("The results folder does not exist on this machine.");
             System.Diagnostics.Trace.WriteLine("Uploading results to database...");
+            System.Diagnostics.Trace.WriteLine("XML Path: " + path);
             DBControl.DAL.Results.UploadXML(xmlFile, path, System.IO.Path.Combine(path, "PublishFailed"), System.IO.Path.Combine(path, "Published"), false, true);
             System.Diagnostics.Trace.WriteLine("Upload complete. Results can be viewed at " + results.Details.RequestNumber);
         }
