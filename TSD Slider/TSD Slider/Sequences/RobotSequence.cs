@@ -412,10 +412,6 @@ namespace TSD_Slider.Sequences
             }
             else
                 Trace.WriteLine("Souce path does not exist!");
-
-
-
-
         }
 
         public string archiveDTFiles(StationConfig stationConfig)
@@ -425,15 +421,32 @@ namespace TSD_Slider.Sequences
                 string[] files = System.IO.Directory.GetFiles(stationConfig.PCDataFolderPath);
                 string lastfile = "";
 
+                string _tempPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TsdLib");
+                if (!System.IO.Directory.Exists(_tempPath))
+                    System.IO.Directory.CreateDirectory(_tempPath);
+
                 foreach (string s in files)
                 {
                     string filename = System.IO.Path.GetFileName(s);
-                    string destFile = System.IO.Path.Combine(System.Environment.CurrentDirectory, "archive", System.IO.Path.GetFileName(s));
-                    System.IO.File.Move(s, destFile);
-                    Trace.WriteLine("File " +
-                        System.IO.Path.GetFileName(s) +
-                        " Archived in " +
-                        System.IO.Path.Combine(System.Environment.CurrentDirectory, "archive"));
+                    Trace.WriteLine(String.Format("File {0}", filename));
+                    string dir = String.Format(@"{0}\Slider\archive\{1}\", _tempPath, DateTime.Now.ToString("MMM_dd_yyyy_HH_mm_ss"));
+
+                    Trace.WriteLine(String.Format("Directory {0}", dir));
+
+                    if (!System.IO.Directory.Exists(dir))
+                    {
+                        Trace.WriteLine(String.Format("Creating {0}", dir));
+                        System.IO.Directory.CreateDirectory(dir);
+                    }
+
+                    string destFile = String.Format(@"{0}\{1}", dir, filename);
+                    Trace.WriteLine(String.Format("Destination: {0}", destFile));
+
+                    System.IO.File.Copy(s, destFile, true);
+                    Trace.WriteLine(String.Format("File {0} Archived in {1}", filename, dir));
+                    System.IO.File.Delete(s);
+                    Trace.WriteLine(String.Format("Deleted: {0}", s));
+
                     lastfile = destFile;
 
                 }
